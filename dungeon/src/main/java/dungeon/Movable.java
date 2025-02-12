@@ -49,7 +49,15 @@ public abstract class Movable extends Atom {
     }
 
     /// we have completed a move, now we may put whatever reacts to that in here
-    public void hasMoved(final Atom theOldLoc) {
+    protected void hasMoved(final Atom theOldLoc) {
+
+    }
+
+    /**
+     * called when we try to move into theDest but theObstacle blocked us from doing so
+     * allows us to react to solid objects.
+     */
+    protected void bump(final Atom theDest, final Atom theObstacle) {
 
     }
 }

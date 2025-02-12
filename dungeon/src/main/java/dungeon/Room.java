@@ -5,4 +5,5 @@ public class Room extends Atom {
     public Room(final int[] theCoords, final String theName) {
         super(theCoords, theName);
     }
+
 }
