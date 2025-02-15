@@ -2,24 +2,27 @@ package dungeon;
 
 public class Thief extends Hero {
     private static final double DEFAULT_HEALTH = 75.0;
+    private static final double DEFAULT_DAMAGE = 0.0;
+    private static final String NAME = "Thief";
+    private static final double DEFAULT_RANGE = 1.0;
     private static final int ATTACK_SPEED = 6;
     private static final double HIT_CHANCE = 0.8;
     private static final int MIN_DAMAGE = 20;
     private static final int MAX_DAMAGE = 40;
     private static final double BLOCK_CHANCE = 0.4;
-    
+
     public Thief() {
-        super(BLOCK_CHANCE, "Surprise Attack");
+        super(DEFAULT_HEALTH, DEFAULT_DAMAGE, NAME, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Surprise Attack");
     }
-    
+
+    @Override
     public double attack() {
         if (Math.random() < HIT_CHANCE) {
             return MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE);
         }
         return 0;
     }
-    
-    // important skill
+
     @Override
     public void useSpecialSkill() {
         double chance = Math.random();

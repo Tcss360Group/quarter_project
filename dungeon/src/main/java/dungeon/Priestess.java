@@ -2,6 +2,9 @@ package dungeon;
 
 public class Priestess extends Hero {
     private static final double DEFAULT_HEALTH = 75.0;
+    private static final double DEFAULT_DAMAGE = 0.0; 
+    private static final String NAME = "Priestess";
+    private static final double DEFAULT_RANGE = 1.0;
     private static final int ATTACK_SPEED = 5;
     private static final double HIT_CHANCE = 0.7;
     private static final int MIN_DAMAGE = 25;
@@ -10,11 +13,12 @@ public class Priestess extends Hero {
     private static final double HEAL_MIN = 20.0;
     private static final double HEAL_MAX = 40.0;
 
+    
     public Priestess() {
-        super(BLOCK_CHANCE, "Healing Touch");
+        super(DEFAULT_HEALTH, DEFAULT_DAMAGE, NAME, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Healing Touch");
     }
 
-    
+    @Override
     public double attack() {
         if (Math.random() < HIT_CHANCE) {
             return MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE);
@@ -22,7 +26,6 @@ public class Priestess extends Hero {
         return 0;
     }
 
-    // healing
     public double heal() {
         double healAmount = HEAL_MIN + Math.random() * (HEAL_MAX - HEAL_MIN);
         System.out.println("Priestess uses Healing Touch!");
@@ -30,7 +33,6 @@ public class Priestess extends Hero {
         return healAmount;
     }
 
-    // important skill
     @Override
     public void useSpecialSkill() {
         double chance = Math.random();
