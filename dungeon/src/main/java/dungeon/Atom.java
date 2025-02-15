@@ -22,7 +22,7 @@ public abstract class Atom {
         myCoords = theCoords.clone();
         myName = theName;
         myContents = new ArrayList<>();
-        mySprite = new GameSprite();
+        mySprite = new GameSprite(theName, 0.0f, 0.0f, 0.0f);
     }
 
     public int[] getCoords() {
@@ -43,6 +43,20 @@ public abstract class Atom {
     }
     public void setName(final String theName) {
         myName = theName;
+    }
+
+    /** 
+     * returns the manhatten distance between two atoms
+     * -1 means no distance - one or both the atoms are not on the map
+    */
+    public static int distance(final Atom a, final Atom b) {
+        if(a == null || b == null) {
+            return -1;
+        }
+        final int[] aCoords = a.getCoords();
+        final int[] bCoords = b.getCoords();
+
+        return Math.abs(aCoords[X] - bCoords[X]) + Math.abs(aCoords[Y] - bCoords[Y]) + Math.abs(aCoords[Z] - bCoords[Z]);
     }
 
     //NO setter for loc at the atom level. non movable atoms DO NOT MOVE!!
@@ -68,8 +82,17 @@ public abstract class Atom {
      * @return
      */
     protected boolean canEnter(final Movable theMov, final Atom theOldLoc) {
+        final ArrayList<Atom> contents = getContents();
+        for(Atom content : contents) {
+            if(content != theMov && !content.cross(theMov, theOldLoc)) {
+                //System.out.println(myName + " canEnter returned false on: " + content.toString());
+                return false;
+            }
+        }
+        //System.out.println(myName + " canEnter returned true for " + theMov.getName());
         return true;
     }
+
     /**
      * whether movable theMov can move out of us into theDest
      * @param theMov
@@ -77,6 +100,15 @@ public abstract class Atom {
      * @return
      */
     protected boolean canExit(final Movable theMov, final Atom theDest) {
+        final ArrayList<Atom> contents = getContents();
+        //System.out.println(myName + " canExit: " + contents.toString());
+        for(Atom content : contents) {
+            if(content != theMov && !content.uncross(theMov, theDest)) {
+                //System.out.println(myName + " canExit returned false on: " + content.toString());
+                return false;
+            }
+        }
+        //System.out.println(myName + " canExit returned true for " + theMov.getName());
         return true;
     }
 
@@ -86,7 +118,10 @@ public abstract class Atom {
      * @param theOldLoc
      */
     protected void hasEntered(final Movable theMov, final Atom theOldLoc) {
-
+        final ArrayList<Atom> contents = getContents();
+        for(Atom content : contents) {
+            content.onCrossed(theMov, theOldLoc);
+        }
     }
 
     /**
@@ -95,7 +130,41 @@ public abstract class Atom {
      * @param theDest
      */
     protected void hasExited(final Movable theMov, final Atom theDest) {
+        final ArrayList<Atom> contents = getContents();
+        for(Atom content : contents) {
+            content.onUncrossed(theMov, theDest);
+        }
+    }
 
+
+    /**
+     * called when something attempts to leave our location but before they do so
+     * return false to stop it, return true to allow it
+     */
+    protected boolean uncross(final Movable theMov, final Atom theDest) {
+        return true;
+    }
+
+    /**
+     * called when something attempts to enter our location but before they do so
+     * return false to stop it, return true to allow it
+     */
+    protected boolean cross(final Movable theMov, final Atom theOldLoc) {
+        return true;
+    }
+
+    /**
+     * called when something will exit our location but their loc hasnt updated
+     */
+    protected void onUncrossed(final Movable theMov, final Atom theDest) {
+        return;
+    }
+
+    /**
+     * called when something has entered our location
+     */
+    protected void onCrossed(final Movable theMov, final Atom theOldLoc) {
+        return;
     }
 
 }

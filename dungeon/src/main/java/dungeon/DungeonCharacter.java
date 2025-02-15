@@ -1,6 +1,6 @@
 package dungeon;
 
-public abstract class DungeonCharacter extends Movable {
+public abstract class DungeonCharacter {
     private double health;
     private double damage;
     private String name;
@@ -8,25 +8,26 @@ public abstract class DungeonCharacter extends Movable {
     private int attackSpeed;
     private double hitChance;
 
-    public DungeonCharacter() {
-        // Default constructor implementation (if needed)
+    
+    public DungeonCharacter(double health, double damage, String name, double range, int attackSpeed, double hitChance) {
+        this.health = health;
+        this.damage = damage;
+        this.name = name;
+        this.range = range;
+        this.attackSpeed = attackSpeed;
+        this.hitChance = hitChance;
     }
 
-    // getters and setters
     public double getHealth() {
         return health;
     }
 
     public void setHealth(double health) {
-        this.health = health;
+        this.health = Math.max(0, health); 
     }
 
     public double getDamage() {
         return damage;
-    }
-
-    public void setDamage(double damage) {
-        this.damage = damage;
     }
 
     public String getName() {
@@ -41,8 +42,9 @@ public abstract class DungeonCharacter extends Movable {
         return attackSpeed;
     }
 
-    // Methods
-    public abstract double attack();
+    public double getHitChance() {
+        return hitChance;
+    }
 
-    public abstract double attackBehavior();
+    public abstract double attack();
 }
