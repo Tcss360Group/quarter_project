@@ -6,6 +6,6 @@ public interface Healing {
     // Getter for heal amount
     int getHealAmount();
 
-    // Setter for heal amount (assuming it takes an int and a string for some reason)
+    // Setter for heal amount 
     void setHealAmount(int amount, String description);
 }
