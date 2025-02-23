@@ -15,8 +15,8 @@ public abstract class Gremlin extends Monster {
     private static final int MIN_DAMAGE = 20;       
     private static final int MAX_DAMAGE = 40;   
 
-    public Gremlin() {
-        super(GREMLIN_HEALTH, GREMLIN_DAMAGE, GREMLIN_NAME, GREMLIN_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
+    public Gremlin(final Atom theLoc) {
+        super(theLoc, GREMLIN_NAME, GREMLIN_HEALTH, GREMLIN_DAMAGE, GREMLIN_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
     }
 
     @Override

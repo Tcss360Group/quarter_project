@@ -11,8 +11,8 @@ public class Warrior extends Hero {
     private static final int MAX_DAMAGE = 60;
     private static final double BLOCK_CHANCE = 0.2;
 
-    public Warrior() {
-        super(DEFAULT_HEALTH, DEFAULT_DAMAGE, NAME, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Crushing Blow");
+    public Warrior(final Atom theLoc) {
+        super(theLoc, NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Crushing Blow");
     }
 
     @Override

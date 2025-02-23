@@ -1,8 +1,18 @@
 package dungeon;
 
-public class DungeonController {
+public class Main {
 
-    public static void main( String[] args ) {
+    public static void main(String[] args) {
+        testBasicWorldGen(4, 4);
+    }
+
+    public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) {
+        GameController controller = new GameController();
+        controller.init(theRoomsPerFloor, theNumFloors);
+        controller.start();
+    }
+
+    public static void testBasicMovement() {
         Room roomA = new Room(new int[]{0,0,0}, "room A");
         TestObj phys = new TestObj(roomA, "the physical object");
         System.out.println( phys.getName() + " is in " + (phys.getLoc() != null ? phys.getLoc().getName() : "nullspace"));

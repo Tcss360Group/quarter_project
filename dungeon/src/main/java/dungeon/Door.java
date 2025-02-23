@@ -5,6 +5,7 @@ package dungeon;
  */
 public class Door extends Movable {
     
+    private static final String DEFAULT_NAME = "door";
     // Default sprite for the door
     private static final GameSprite DOOR_DEFAULT_SPRITE = new GameSprite("door_default.png", 0.0f, 0.0f, 0.0f);
     
@@ -22,6 +23,10 @@ public class Door extends Movable {
         super(theLocation, theName);
         this.myDest = theDest;
         this.myIsOpen = false;
+    }
+
+    public Door(final Atom theLocation, final Room theDest) {
+        this(theLocation, DEFAULT_NAME, theDest);
     }
 
     public void unlock() {
