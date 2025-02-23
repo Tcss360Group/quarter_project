@@ -25,10 +25,21 @@ public abstract class Atom {
         mySprite = new GameSprite(theName, 0.0f, 0.0f, 0.0f);
     }
 
+    public Atom(final String theName) {
+        this(new int[] { 0, 0, 0 }, theName);
+    }
+
+    /**
+     * allows this object to actually react to the existing world after being placed on the map.
+     */
+    public void initialize() throws Exception {
+
+    }
+
     public int[] getCoords() {
         return myCoords;
     }
-    protected void setCoords(final int[] theCoords) {
+    public void setCoords(final int[] theCoords) {
         myCoords = theCoords.clone();
     }
     @SuppressWarnings("unchecked")
@@ -73,6 +84,22 @@ public abstract class Atom {
         myContents.removeAll(theOldContents);
     }
 
+    ///get all contents and contents of contents and contents of contents of contents ... of this
+    public ArrayList<Atom> getRecursiveContents() {
+        ArrayList<Atom> retList = new ArrayList<>();
+        ArrayList<Atom> queue = new ArrayList<>();
+        queue.add(this);
+        while(queue.size() > 0) {
+            @SuppressWarnings("unchecked")
+            ArrayList<Atom> copy = (ArrayList<Atom>)queue.clone();
+            for(Atom node : copy) {
+                queue.remove(node);
+                queue.addAll(node.getContents());
+                retList.add(node);
+            }
+        }
+        return retList;
+    }
 
     //eventually these will fire off events so things can register to them
     /**

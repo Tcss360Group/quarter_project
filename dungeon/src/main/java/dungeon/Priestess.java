@@ -14,8 +14,8 @@ public class Priestess extends Hero {
     private static final double HEAL_MAX = 40.0;
 
     
-    public Priestess() {
-        super(DEFAULT_HEALTH, DEFAULT_DAMAGE, NAME, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Healing Touch");
+    public Priestess(final Atom theLoc) {
+        super(theLoc, NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Healing Touch");
     }
 
     @Override

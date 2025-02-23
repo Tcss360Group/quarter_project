@@ -1,5 +1,7 @@
 package dungeon;
 
+import java.util.ArrayList;
+
 /**
  * things that can move
  */
@@ -8,7 +10,7 @@ public abstract class Movable extends Atom {
     private Atom myLoc;
 
     public Movable(final Atom theLoc, String theName) {
-        super(theLoc.getCoords(), theName);
+        super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
         setLoc(theLoc);
     }
 
@@ -24,6 +26,21 @@ public abstract class Movable extends Atom {
             theDest.addContents(this);
             setCoords(theDest.getCoords());
         }
+    }
+
+    ///get all atoms that contain us and what contains us and what contains that and so on
+    public ArrayList<Atom> getRecursiveLocs() {
+        ArrayList<Atom> retList = new ArrayList<>();
+        Atom loc = getLoc();
+        while(loc != null) {
+            retList.add(loc);
+            if(loc instanceof Movable) {
+                Movable MLoc = (Movable) loc;
+                loc = MLoc.getLoc();
+            }
+        }
+
+        return retList;
     }
 
     ///move from our loc to theDest if possible

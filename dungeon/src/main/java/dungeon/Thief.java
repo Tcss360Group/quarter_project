@@ -11,8 +11,8 @@ public class Thief extends Hero {
     private static final int MAX_DAMAGE = 40;
     private static final double BLOCK_CHANCE = 0.4;
 
-    public Thief() {
-        super(DEFAULT_HEALTH, DEFAULT_DAMAGE, NAME, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Surprise Attack");
+    public Thief(final Atom theLoc) {
+        super(theLoc, NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RANGE, ATTACK_SPEED, HIT_CHANCE, BLOCK_CHANCE, "Surprise Attack");
     }
 
     @Override

@@ -2,7 +2,7 @@ package dungeon;
 
 import java.util.Random;
 
-public abstract class Skeleton extends Monster {
+public class Skeleton extends Monster {
     private static final double SKELETON_HEALTH = 100.0;
     private static final double SKELETON_DAMAGE = 40.0;  
     private static final double SKELETON_RANGE = 1.0;   
@@ -15,8 +15,8 @@ public abstract class Skeleton extends Monster {
     private static final int MIN_DAMAGE = 30;       
     private static final int MAX_DAMAGE = 50;     
 
-    public Skeleton() {
-        super(SKELETON_HEALTH, SKELETON_DAMAGE, SKELETON_NAME, SKELETON_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
+    public Skeleton(final Atom theLoc) {
+        super(theLoc, SKELETON_NAME, SKELETON_HEALTH, SKELETON_DAMAGE, SKELETON_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
     }
 
     @Override

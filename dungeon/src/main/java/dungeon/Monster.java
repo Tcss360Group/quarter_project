@@ -7,10 +7,10 @@ public abstract class Monster extends DungeonCharacter {
     private final int minHealPoints;
     private final int maxHealPoints;
 
-    public Monster(double health, double damage, String name, double range, int attackSpeed, double hitChance, 
-                   double chanceToHeal, int minHealPoints, int maxHealPoints) {
+    public Monster(final Atom theLoc, final String theName, final double health, final double damage, final double range, final int attackSpeed, final double hitChance, 
+                   final double chanceToHeal, final int minHealPoints, final int maxHealPoints) {
        
-        super(health, damage, name, range, attackSpeed, hitChance);
+        super(theLoc, theName, health, damage, range, attackSpeed, hitChance);
         this.chanceToHeal = chanceToHeal;
         this.minHealPoints = minHealPoints;
         this.maxHealPoints = maxHealPoints;
@@ -44,7 +44,9 @@ public abstract class Monster extends DungeonCharacter {
         }
     }
 
-    public abstract void specialMonsterAbility();
+    public void specialMonsterAbility() {
+        
+    }
 
     @Override
     public double attack() {

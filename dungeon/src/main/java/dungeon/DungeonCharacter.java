@@ -1,21 +1,26 @@
 package dungeon;
 
-public abstract class DungeonCharacter {
+public abstract class DungeonCharacter extends Movable {
     private double health;
     private double damage;
-    private String name;
     private double range;
     private int attackSpeed;
     private double hitChance;
 
     
-    public DungeonCharacter(double health, double damage, String name, double range, int attackSpeed, double hitChance) {
+    public DungeonCharacter(final Atom theLoc, final String theName, final double health, final double damage,
+            final double range, final int attackSpeed, final double hitChance) {
+        super(theLoc, theName);
         this.health = health;
         this.damage = damage;
-        this.name = name;
         this.range = range;
         this.attackSpeed = attackSpeed;
         this.hitChance = hitChance;
+    }
+
+    ///called every tick to make this DC perform an action
+    public void pollAction() {
+
     }
 
     public double getHealth() {
@@ -28,10 +33,6 @@ public abstract class DungeonCharacter {
 
     public double getDamage() {
         return damage;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public double getRange() {
