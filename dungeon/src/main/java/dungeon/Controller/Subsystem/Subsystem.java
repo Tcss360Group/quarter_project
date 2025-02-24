@@ -8,12 +8,18 @@ import dungeon.Controller.GameController;
  */
 public class Subsystem {
 
+    private static final SubsystemInitOrder DEFAULT_INIT_ORDER = SubsystemInitOrder.DEFAULT;
+    //no default name, always name subsystems
+    private static final double DEFAULT_PRIORITY = 10.0;
+    private static final int DEFAULT_WAIT = 1;
+    private static final boolean DEFAULT_CAN_FIRE = false;
+
     private GameController myController;
     private String myName;
 
     private SubsystemInitOrder myInitOrder;
     /// later meant to determine how much of the tick the subsystem is allowed to use
-    private double myFirePriority;
+    private double myPriority;
     /// how many ticks go between this subsystem firing. the longer this is the less it will process
     private int myWait;
 
@@ -23,17 +29,37 @@ public class Subsystem {
             final GameController theController, 
             final String theName,
             final SubsystemInitOrder theOrder,
-            final double theFirePriority,
+            final double thePriority,
             final int theWait,
             final boolean theCanFire) {
         myController = theController;
         myName = theName;
         myInitOrder = theOrder;
-        myFirePriority = theFirePriority;
+        myPriority = thePriority;
         myWait = theWait;
         myCanFire = theCanFire;
     }
 
+    public Subsystem(final GameController theController, final String theName) {
+        this(theController, theName, DEFAULT_INIT_ORDER, DEFAULT_PRIORITY, DEFAULT_WAIT, DEFAULT_CAN_FIRE);
+    }
+    
+    public Subsystem(final GameController theController, final String theName, final SubsystemInitOrder theOrder) {
+        this(theController, theName, theOrder, DEFAULT_PRIORITY, DEFAULT_WAIT, DEFAULT_CAN_FIRE);
+    }
+
+    public Subsystem(final GameController theController, final String theName, final SubsystemInitOrder theOrder, final boolean theCanFire) {
+        this(theController, theName, theOrder, DEFAULT_PRIORITY, DEFAULT_WAIT, theCanFire);
+    }
+
+    public Subsystem(final GameController theController, final String theName, final SubsystemInitOrder theOrder, final double thePriority) {
+        this(theController, theName, theOrder, thePriority, DEFAULT_WAIT, DEFAULT_CAN_FIRE);
+    }
+
+    public Subsystem(final GameController theController, final String theName, final double thePriority) {
+        this(theController, theName, DEFAULT_INIT_ORDER, thePriority, DEFAULT_WAIT, DEFAULT_CAN_FIRE);
+    }
+    
     public void initialize() {
 
     }
@@ -73,12 +99,12 @@ public class Subsystem {
     }
 
 
-    public double getFirePriority() {
-        return myFirePriority;
+    public double getPriority() {
+        return myPriority;
     }
 
-    public void setFirePriority(final double myFirePriority) {
-        this.myFirePriority = myFirePriority;
+    public void setPriority(final double myPriority) {
+        this.myPriority = myPriority;
     }
 
     public int getWait() {
