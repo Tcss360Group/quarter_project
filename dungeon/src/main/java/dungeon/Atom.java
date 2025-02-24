@@ -7,6 +7,8 @@ import java.util.ArrayList;
  */
 public abstract class Atom {
 
+    private static final String DEFAULT_NAME = "thing";
+
     public static int X = 2;
     public static int Y = 1;
     public static int Z = 0;
@@ -25,8 +27,21 @@ public abstract class Atom {
         mySprite = new GameSprite(theName, 0.0f, 0.0f, 0.0f);
     }
 
+    public Atom(final int[] theCoords) {
+        this(theCoords, DEFAULT_NAME);
+    }
+
     public Atom(final String theName) {
         this(new int[] { 0, 0, 0 }, theName);
+    }
+ 
+    /**
+     * returns what stage this class inits in, with NORMAL being the earliest and LATER being the latest
+     * classes that init at later stages are able to react to the state of the world initialized in earlier stages
+     * @return
+     */
+    public InitOrder initOrder() {
+        return InitOrder.NORMAL;
     }
 
     /**
