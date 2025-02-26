@@ -1,3 +1,5 @@
+package dungeon;
+
 public interface Healing {
     
     // Abstract method to heal
