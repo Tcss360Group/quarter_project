@@ -18,7 +18,8 @@ public class Warrior extends Hero {
     @Override
     public double attack() {
         if (Math.random() < HIT_CHANCE) {
-            return MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE);
+            double damage = MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE);
+            return Math.round(damage);  // Round to nearest whole number
         }
         return 0;
     }
@@ -26,8 +27,10 @@ public class Warrior extends Hero {
     @Override
     public void useSpecialSkill() {
         if (Math.random() < 0.4) {
+            double damage = 75 + Math.random() * 100;
+            damage = Math.round(damage);  // Round to nearest whole number
             System.out.println("Warrior uses Crushing Blow!");
-            System.out.println("Damage dealt: " + (75 + Math.random() * 100));
+            System.out.println("Damage dealt: " + damage);
         } else {
             System.out.println("Crushing Blow missed!");
         }

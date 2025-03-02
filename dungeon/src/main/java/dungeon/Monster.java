@@ -9,7 +9,6 @@ public abstract class Monster extends DungeonCharacter {
 
     public Monster(final Atom theLoc, final String theName, final double health, final double damage, final double range, final int attackSpeed, final double hitChance, 
                    final double chanceToHeal, final int minHealPoints, final int maxHealPoints) {
-       
         super(theLoc, theName, health, damage, range, attackSpeed, hitChance);
         this.chanceToHeal = chanceToHeal;
         this.minHealPoints = minHealPoints;
@@ -31,21 +30,28 @@ public abstract class Monster extends DungeonCharacter {
     public void heal() {
         if (new Random().nextDouble() < chanceToHeal) {
             int healAmount = new Random().nextInt(maxHealPoints - minHealPoints + 1) + minHealPoints;
-            setHealth(getHealth() + healAmount);
+            setHealth(getHealth() + healAmount);  // Add healing points
             System.out.println(getName() + " heals for " + healAmount + " points!");
         }
     }
 
     @Override
     public void setHealth(double health) {
+        // Ensure health doesn't go below 0
+        health = Math.max(health, 0);
+
+        // Optionally, cap the health at a maximum value if needed
+        // Example: If you want max health to be 200, you could do:
+        // health = Math.min(health, 200);
+
         super.setHealth(health);
         if (health > 0) {
-            heal(); 
+            heal();  // If health is still positive, try healing
         }
     }
 
     public void specialMonsterAbility() {
-        
+        // Implement special ability for the monster
     }
 
     @Override

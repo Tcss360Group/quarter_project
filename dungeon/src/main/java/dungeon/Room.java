@@ -1,20 +1,22 @@
 package dungeon;
 
-/** where things are - the base level of atom in the world */
+import java.util.Random;
+
 public class Room extends Atom {
+    private String roomName;
 
-    private static final String DEFAULT_NAME = "Room";
-
-    public Room(final int[] theCoords, final String theName) {
-        super(theCoords, theName);
+    public Room(int[] coordinates, String roomName) {
+        super(coordinates, roomName);  // Call the Atom constructor with coordinates and roomName
+        this.roomName = roomName;
     }
 
-    public Room(final int[] theCoords) {
-        super(theCoords, DEFAULT_NAME);
+    public String getRoomName() {
+        return roomName;
     }
 
-    public Room() {
-        super(DEFAULT_NAME);
+    // Method to check if a battle occurs in the room
+    public boolean checkForBattle() {
+        Random random = new Random();
+        return random.nextDouble() < 0.5;  // 50% chance for a battle to occur
     }
-
 }

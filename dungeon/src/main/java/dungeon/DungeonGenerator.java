@@ -126,7 +126,7 @@ public final class DungeonGenerator {
             y = coords[Atom.Y];
         }
         
-        Room currentRoom = new Room(new int[]{x, y, z});
+        Room currentRoom = new Room(new int[]{x, y, z}, "Some Room Name");
         floor.myRooms.add(currentRoom);
         floor.myEntrance = currentRoom;
         floor.myMap[y][x] = currentRoom;
@@ -152,8 +152,7 @@ public final class DungeonGenerator {
             dirToMove = dirToMove.clockwise();
             System.out.println("dir: " + dirToMove.toString() + " x: " + x + " y: " + y + " width: " + theWidth + " height: " + theHeight);
 
-            currentRoom = new Room(new int[]{x, y, 0});
-
+            currentRoom = new Room(new int[]{x, y, 0}, "Other Room Name");
             floor.myMap[y][x] = currentRoom;
 
             Room comp;

@@ -2,7 +2,7 @@ package dungeon;
 
 import java.util.Random;
 
-public abstract class Gremlin extends Monster {
+public class Gremlin extends Monster {
     private static final double GREMLIN_HEALTH = 70.0;
     private static final double GREMLIN_DAMAGE = 22.5; 
     private static final String GREMLIN_NAME = "Gremlin";

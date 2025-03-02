@@ -4,7 +4,12 @@ public class Pillar extends Physical {
     private static int collectedPillars = 0; // Track how many pillars are collected
 
     public Pillar(final Atom theLoc, final String theName) {
-        super(theLoc, theName);
+        super(theLoc, theName, "A mysterious ancient pillar.");
+    }
+
+    @Override
+    public void interact() {
+        collect();
     }
 
     public void collect() {
