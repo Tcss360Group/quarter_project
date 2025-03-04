@@ -24,10 +24,10 @@ public class Gremlin extends Monster {
         Random random = new Random();
         if (random.nextDouble() < HIT_CHANCE) {
             int damageDealt = random.nextInt(MAX_DAMAGE - MIN_DAMAGE + 1) + MIN_DAMAGE;  // Random value between 20 and 40
-            System.out.println(getName() + " swiftly strikes and deals " + damageDealt + " damage!");
+
             return damageDealt;
         } else {
-            System.out.println(getName() + " misses the attack!");
+
             return 0;
         }
     }

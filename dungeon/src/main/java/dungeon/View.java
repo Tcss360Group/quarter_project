@@ -19,10 +19,9 @@ public class View {
     private final CardLayout cardLayout;
     private final TitleScreenPanel titleScreen;
     private final JPanel dungeonPanel;
-    private static int currentRow = 0;
-    private static int currentCol = 0;
-    private static JButton[][] rooms = new JButton[5][5];
+    private final static JButton[][] rooms = new JButton[5][5];
     private String selectedHero = "";  // To store the selected hero
+    private Hero hero;  // The player's hero
 
     public View() {
         frame = new JFrame("Dungeon Adventure Game");
@@ -40,7 +39,7 @@ public class View {
         titleScreen = new TitleScreenPanel(new TitleScreenController());
         mainPanel.add(titleScreen, "TitleScreen");
 
-        // Dungeon grid setup (initially empty, will be initialized later)
+        // Dungeon grid setup
         dungeonPanel = new JPanel(new GridLayout(5, 5));
         mainPanel.add(dungeonPanel, "Dungeon");
 
@@ -55,7 +54,7 @@ public class View {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 rooms[i][j] = new JButton("Room " + (i * 5 + j + 1));
-                rooms[i][j].addActionListener(new RoomActionListener(i, j));
+                rooms[i][j].addActionListener(new RoomActionListener(i, j)); // Link rooms to combat
                 dungeonPanel.add(rooms[i][j]);
             }
         }
@@ -69,10 +68,9 @@ public class View {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
             if (command.equals("New Game")) {
-                // Show hero selection dialog
+                // Show hero selection dialog before starting the game
                 showHeroSelectionDialog();
             } else if (command.equals("Load Game")) {
-                // Implement load game functionality
                 JOptionPane.showMessageDialog(frame, "Implement");
             } else if (command.equals("Exit")) {
                 System.exit(0);
@@ -81,45 +79,65 @@ public class View {
     }
 
     private void showHeroSelectionDialog() {
-        // Create radio buttons for hero selection
+        // Create hero options
         String[] heroes = {"Warrior", "Thief", "Priestess"};
-        String selectedHero = (String) JOptionPane.showInputDialog(
+        String chosenHero = (String) JOptionPane.showInputDialog(
                 frame,
-                "Which Hero should start in the Dungeon?",
+                "Select your hero:",
                 "Hero Selection",
                 JOptionPane.QUESTION_MESSAGE,
                 null,
                 heroes,
                 heroes[0]
         );
-    
-        if (selectedHero != null) {
-            this.selectedHero = selectedHero; // Store the selected hero
+
+        if (chosenHero != null) {
+            this.selectedHero = chosenHero;
             System.out.println(selectedHero + " selected!");
-            
-            // Initialize the dungeon grid only after hero selection
-            initializeDungeon(); 
-            
-            // Switch to dungeon grid
-            cardLayout.show(mainPanel, "Dungeon"); 
+
+            // Create the hero object based on selection
+            Room initialRoom = new Room(new int[]{0, 0}, "Starting Room"); // Example room for hero location
+            switch (chosenHero) {
+                case "Warrior":
+                    this.hero = new Warrior(initialRoom); 
+                    break;
+                case "Thief":
+                    this.hero = new Thief(initialRoom);  
+                    break;
+                case "Priestess":
+                    this.hero = new Priestess(initialRoom); 
+                    break;
+                default:
+                    this.hero = new Warrior(initialRoom); // Default to Warrior if invalid
+            }
+
+            // Initialize dungeon grid and switch to it
+            initializeDungeon();
+            cardLayout.show(mainPanel, "Dungeon");
         } else {
             System.out.println("Hero selection canceled.");
         }
     }
 
-    // ActionListener for dungeon rooms
-    private static class RoomActionListener implements ActionListener {
-        private int row, col;
+    private class RoomActionListener implements ActionListener {
+        private final int row, col;
+    
         public RoomActionListener(int row, int col) {
             this.row = row;
             this.col = col;
         }
-
+    
         @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println("Clicked room at (" + row + ", " + col + ")");
+            // Create a random monster for combat
+            Room currentRoom = new Room(new int[]{row, col}, "Room " + (row * 5 + col + 1));
+            Monster monster = MonsterFactory.createRandomMonster(currentRoom); 
+            // Start combat
+            CombatManager.battle(frame, hero, monster);  
         }
     }
+    
 
     // Main method
     public static void main(String[] args) {

@@ -24,10 +24,10 @@ public class Ogre extends Monster {
         Random random = new Random();
         if (random.nextDouble() < HIT_CHANCE) {
             int damageDealt = random.nextInt(MAX_DAMAGE - MIN_DAMAGE + 1) + MIN_DAMAGE;  // Random value between 30 and 60
-            System.out.println(getName() + " swings its club fiercely and deals " + damageDealt + " damage!");
+
             return damageDealt;
         } else {
-            System.out.println(getName() + " misses the attack!");
+
             return 0;
         }
     }
