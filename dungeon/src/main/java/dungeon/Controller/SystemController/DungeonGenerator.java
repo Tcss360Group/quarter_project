@@ -215,10 +215,11 @@ public final class DungeonGenerator extends SystemController {
         }
         
         
+        System.out.println("x " + x + " y " + y);
+
 
         Room currentRoom = addRoom(floor, new Room(new int[] { x, y, z }));
         floor.myEntrance = currentRoom;
-        floor.myMap[y][x] = currentRoom;
 
         ArrayList<Room> border = new ArrayList<>();
         border.add(currentRoom);

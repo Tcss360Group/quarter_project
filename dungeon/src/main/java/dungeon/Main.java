@@ -20,7 +20,7 @@ public class Main {
 
     public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) {
 
-        int size = (int)Math.sqrt(theRoomsPerFloor);
+        int size = (int)Math.sqrt(theRoomsPerFloor) * 2;
         DungeonGenerationOptions options = new DungeonGenerationOptions(
                 theRoomsPerFloor,
                 theNumFloors,

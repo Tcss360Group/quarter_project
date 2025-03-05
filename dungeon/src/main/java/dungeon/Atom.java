@@ -11,9 +11,9 @@ public abstract class Atom {
 
     private static final String DEFAULT_NAME = "thing";
 
-    public static int X = 0;
-    public static int Y = 1;
-    public static int Z = 2;
+    public static final int X = 0;
+    public static final int Y = 1;
+    public static final int Z = 2;
 
     private int[] myCoords;
     ///atoms that are directly inside of us
