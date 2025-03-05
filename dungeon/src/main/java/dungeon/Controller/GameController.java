@@ -117,7 +117,7 @@ public class GameController {
 
     private void loop() { //TODO: loop in player input through here to their mob?
         int tick = 0;
-        while (!gameIsDone() || tick >= 10) {
+        while (!gameIsDone() && tick < 10) {
             //System.out.println("tick: " + tick);
             for (int i = 0; i < myMobs.size(); i++) {
                 DungeonCharacter character = myMobs.get(i);

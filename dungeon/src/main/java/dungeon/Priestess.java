@@ -21,13 +21,13 @@ public class Priestess extends Hero {
     @Override
     public double attack() {
         if (Math.random() < HIT_CHANCE) {
-            return MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE);
+            return Math.round(MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE));
         }
         return 0;
     }
 
     public double heal() {
-        double healAmount = HEAL_MIN + Math.random() * (HEAL_MAX - HEAL_MIN);
+        double healAmount = Math.round(HEAL_MIN + Math.random() * (HEAL_MAX - HEAL_MIN));
         System.out.println("Priestess uses Healing Touch!");
         System.out.println("Healing amount: " + healAmount);
         return healAmount;

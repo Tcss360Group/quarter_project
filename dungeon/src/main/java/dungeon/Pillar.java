@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import dungeon.Controller.GameController;
 
 public class Pillar extends Physical {
+    private static String DESCRIPTION = "A mysterious ancient pillar";
     /// the stairs that lead from our spawning room to the floor below us, if any exists
     private Stairs myHereToBelow;
     /// the stairs that lead from the floor below us to our spawning room, if any exists
     private Stairs myBelowToHere;
 
     public Pillar(final Atom theLoc, final String theName) {
-        super(theLoc, theName);
+        super(theLoc, theName, DESCRIPTION);
         myHereToBelow = null;
         myBelowToHere = null;
     }
@@ -64,6 +65,7 @@ public class Pillar extends Physical {
         } else if (!(getLoc() instanceof Hero) && theOldLoc instanceof Hero) {
             onDropped();
         }
+
     }
 
 }

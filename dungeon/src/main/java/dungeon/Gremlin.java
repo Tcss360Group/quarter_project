@@ -2,7 +2,7 @@ package dungeon;
 
 import java.util.Random;
 
-public abstract class Gremlin extends Monster {
+public class Gremlin extends Monster {
     private static final double GREMLIN_HEALTH = 70.0;
     private static final double GREMLIN_DAMAGE = 22.5; 
     private static final String GREMLIN_NAME = "Gremlin";
@@ -24,10 +24,10 @@ public abstract class Gremlin extends Monster {
         Random random = new Random();
         if (random.nextDouble() < HIT_CHANCE) {
             int damageDealt = random.nextInt(MAX_DAMAGE - MIN_DAMAGE + 1) + MIN_DAMAGE;  // Random value between 20 and 40
-            System.out.println(getName() + " swiftly strikes and deals " + damageDealt + " damage!");
+
             return damageDealt;
         } else {
-            System.out.println(getName() + " misses the attack!");
+
             return 0;
         }
     }

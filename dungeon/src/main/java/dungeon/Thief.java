@@ -18,7 +18,7 @@ public class Thief extends Hero {
     @Override
     public double attack() {
         if (Math.random() < HIT_CHANCE) {
-            return MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE);
+            return Math.round(MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE));
         }
         return 0;
     }
