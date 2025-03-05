@@ -37,6 +37,8 @@ public abstract class Movable extends Atom {
             if(loc instanceof Movable) {
                 Movable MLoc = (Movable) loc;
                 loc = MLoc.getLoc();
+            } else {
+                break;
             }
         }
 

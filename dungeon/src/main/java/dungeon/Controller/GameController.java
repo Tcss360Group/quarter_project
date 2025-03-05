@@ -123,6 +123,7 @@ public class GameController {
                 DungeonCharacter character = myMobs.get(i);
                 character.pollAction();
             }
+            tick++;
         }
         setState(GameState.DONE);
         System.out.println("game is done!");
