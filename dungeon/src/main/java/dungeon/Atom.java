@@ -2,6 +2,8 @@ package dungeon;
 
 import java.util.ArrayList;
 
+import dungeon.Controller.GameController;
+
 /**
  * an entity that can be traced to either be in nullspace (null myLoc) or the contents of another atom
  */
@@ -9,9 +11,9 @@ public abstract class Atom {
 
     private static final String DEFAULT_NAME = "thing";
 
-    public static int X = 2;
+    public static int X = 0;
     public static int Y = 1;
-    public static int Z = 0;
+    public static int Z = 2;
 
     private int[] myCoords;
     ///atoms that are directly inside of us
@@ -52,7 +54,7 @@ public abstract class Atom {
     }
 
     public int[] getCoords() {
-        return myCoords;
+        return myCoords.clone();
     }
     public void setCoords(final int[] theCoords) {
         myCoords = theCoords.clone();
