@@ -83,6 +83,7 @@ public class AtomLoader extends SystemController {
             for (Atom atom : theAtoms) {
                 stageAtom(atom, immediateInitList);
             }
+            initAtoms(immediateInitList);
         } else {
             for (Atom atom : theAtoms) {
                 stageAtom(atom);
