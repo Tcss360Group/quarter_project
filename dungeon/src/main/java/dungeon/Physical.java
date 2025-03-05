@@ -6,8 +6,16 @@ package dungeon;
  */
 public abstract class Physical extends Movable {
 
+    private static final String DESCRIPTION = "";
+
     private boolean isActive;  // Tracks whether the object is still active 
     private String description; // A brief description of the object
+
+    public Physical(final Atom theLoc, final String theName) {
+        super(theLoc, theName);
+        this.description = DESCRIPTION;
+        this.isActive = true; // Default state, can be deactivated (e.g., after use)
+    }
 
     public Physical(final Atom theLoc, final String theName, String description) {
         super(theLoc, theName);
@@ -19,7 +27,9 @@ public abstract class Physical extends Movable {
      * Abstract method to be implemented by specific physical objects (e.g., items, traps).
      * Defines how the object is interacted with.
      */
-    public abstract void interact();
+    public void interact() {
+
+    }
 
     /**
      * A method to deactivate the object (e.g., a trap after it's triggered or an item after it is picked up).

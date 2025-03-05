@@ -22,7 +22,7 @@ public class CombatTest {
         Monster enemy = MonsterFactory.createRandomMonster(location);
 
         // Print initial status
-        System.out.println("Entering " + ((Room) location).getRoomName());
+        System.out.println("Entering " + ((Room) location).getName());
         System.out.println(warrior.getName() + " Health: " + warrior.getHealth());
 
         // 50% chance for a battle to occur

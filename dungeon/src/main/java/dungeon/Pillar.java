@@ -1,44 +1,71 @@
 package dungeon;
 
+import java.util.ArrayList;
+import dungeon.Controller.GameController;
+
 public class Pillar extends Physical {
-    private static int collectedPillars = 0; // Track how many pillars are collected
+    private static String DESCRIPTION = "A mysterious ancient pillar";
+    /// the stairs that lead from our spawning room to the floor below us, if any exists
+    private Stairs myHereToBelow;
+    /// the stairs that lead from the floor below us to our spawning room, if any exists
+    private Stairs myBelowToHere;
 
     public Pillar(final Atom theLoc, final String theName) {
-        super(theLoc, theName, "A mysterious ancient pillar.");
+        super(theLoc, theName, DESCRIPTION);
+        myHereToBelow = null;
+        myBelowToHere = null;
     }
 
     @Override
-    public void interact() {
-        collect();
-    }
+    public void initialize() {
+        final GameController controller = Main.getController();
+        controller.addPillar(this);
 
-    public void collect() {
-        collectedPillars++;
-        System.out.println("You have collected a pillar! Total: " + collectedPillars);
+        Atom loc = getLoc();
+        int[] coords = loc.getCoords();
 
-        // Replace the pillar with a stair
-        replaceWithStair();
-
-        // Check if the game should end
-        if (collectedPillars >= 4) {
-            endGame();
+        for (Atom contents : loc.getContents()) {
+            if (contents instanceof Stairs sContents) {
+                myHereToBelow = sContents;
+            }
         }
+        
+        coords[Z] -= 1;
+        if (Z < 0) {
+            return;
+        }
+        Room[][][] map = controller.getMap();
+        Room below = map[coords[Z]][coords[Y]][coords[X]];
+
+        for (Atom contents : below.getContents()) {
+            if (contents instanceof Stairs sContents) {
+                myBelowToHere = sContents;
+            }
+        }
+
     }
 
-    private void replaceWithStair() {
-        // Creates a new stair at the current location
-        Stair stair = new Stair(this.getLoc(), "Staircase");
-        this.getLoc().addContents(stair); // Add the stair to the same location
-        this.getLoc().removeContents(this); // Remove the pillar from the location
-        System.out.println("A staircase has appeared!");
+    public void onPickedUp() {
+        Hero loc = (Hero) getLoc();
+        System.out.println("you have picked up the pillar of " + getName() + "!");
+        myHereToBelow.unlock();
+        myBelowToHere.unlock();
+    }
+    
+    public void onDropped() {
+        System.out.println("you have dropped the pillar of " + getName() + "!");
+        myHereToBelow.lock();
+        myBelowToHere.lock();
     }
 
-    private void endGame() {
-        System.out.println("You have collected all 4 pillars! The game is over!");
-        // Trigger any game end logic here (like showing an end screen or stopping the game)
+    @Override
+    public void hasMoved(final Atom theOldLoc) {
+        if (getLoc() instanceof Hero && !(theOldLoc instanceof Hero)) {
+            onPickedUp();
+        } else if (!(getLoc() instanceof Hero) && theOldLoc instanceof Hero) {
+            onDropped();
+        }
+
     }
 
-    public static int getCollectedPillars() {
-        return collectedPillars;
-    }
 }

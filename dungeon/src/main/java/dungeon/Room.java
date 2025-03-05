@@ -3,16 +3,16 @@ package dungeon;
 import java.util.Random;
 
 public class Room extends Atom {
-    private String roomName;
 
-    public Room(int[] coordinates, String roomName) {
-        super(coordinates, roomName);  // Call the Atom constructor with coordinates and roomName
-        this.roomName = roomName;
+    private static final String NAME = "room";
+
+    public Room(int[] coordinates) {
+        super(coordinates, NAME);  // Call the Atom constructor with coordinates and roomName
+    }
+    public Room(int[] coordinates, String name) {
+        super(coordinates, name);  // Call the Atom constructor with coordinates and roomName
     }
 
-    public String getRoomName() {
-        return roomName;
-    }
 
     // Method to check if a battle occurs in the room
     public boolean checkForBattle() {

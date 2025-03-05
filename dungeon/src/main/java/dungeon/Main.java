@@ -1,14 +1,37 @@
 package dungeon;
 
+import dungeon.Controller.GameController;
+
 public class Main {
+
+    private static GameController controller = null;
+
+    private static void setController(final GameController theController) {
+        controller = theController;
+    }
+
+    public static GameController getController() {
+        return controller;
+    }
 
     public static void main(String[] args) {
         testBasicWorldGen(4, 4);
     }
 
     public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) {
-        GameController controller = new GameController();
-        controller.init(theRoomsPerFloor, theNumFloors);
+
+        int size = (int)Math.sqrt(theRoomsPerFloor) * 2;
+        DungeonGenerationOptions options = new DungeonGenerationOptions(
+                theRoomsPerFloor,
+                theNumFloors,
+                4,
+                10,
+                new String[] { "a", "b", "c", "d" },
+                size,
+                size);
+        GameController controller = new GameController(options);
+        setController(controller);
+        controller.init();
         controller.start();
     }
 

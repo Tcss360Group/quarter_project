@@ -2,14 +2,18 @@ package dungeon;
 
 import java.util.ArrayList;
 
+import dungeon.Controller.GameController;
+
 /**
  * an entity that can be traced to either be in nullspace (null myLoc) or the contents of another atom
  */
 public abstract class Atom {
 
-    public static int X = 2;
-    public static int Y = 1;
-    public static int Z = 0;
+    private static final String DEFAULT_NAME = "thing";
+
+    public static final int X = 0;
+    public static final int Y = 1;
+    public static final int Z = 2;
 
     private int[] myCoords;
     ///atoms that are directly inside of us
@@ -25,8 +29,21 @@ public abstract class Atom {
         mySprite = new GameSprite(theName, 0.0f, 0.0f, 0.0f);
     }
 
+    public Atom(final int[] theCoords) {
+        this(theCoords, DEFAULT_NAME);
+    }
+
     public Atom(final String theName) {
         this(new int[] { 0, 0, 0 }, theName);
+    }
+ 
+    /**
+     * returns what stage this class inits in, with NORMAL being the earliest and LATER being the latest
+     * classes that init at later stages are able to react to the state of the world initialized in earlier stages
+     * @return
+     */
+    public InitOrder initOrder() {
+        return InitOrder.NORMAL;
     }
 
     /**
@@ -37,7 +54,7 @@ public abstract class Atom {
     }
 
     public int[] getCoords() {
-        return myCoords;
+        return myCoords.clone();
     }
     public void setCoords(final int[] theCoords) {
         myCoords = theCoords.clone();
