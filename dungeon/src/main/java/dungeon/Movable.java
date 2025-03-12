@@ -7,11 +7,32 @@ import java.util.ArrayList;
  */
 public abstract class Movable extends Atom {
 
+    private static final double VISION_POWER = VisionPower.NONE.power();
+    private static final double INVISION_POWER = VisionPower.NONE.power();
+
     private Atom myLoc;
+    ///states whether this movable is visible to the player
+    private double myVisionPower;
+    /// if the invisibility of an object is greater than the vision power of a mob then that mob cant see that object
+    private double myInvisiblePower;
 
     public Movable(final Atom theLoc, String theName) {
         super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
         setLoc(theLoc);
+        myVisionPower = VISION_POWER;
+        myInvisiblePower = INVISION_POWER;
+    }
+    public Movable(final Atom theLoc, String theName, final double theVisionPower) {
+        super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
+        setLoc(theLoc);
+        myVisionPower = theVisionPower;
+        myInvisiblePower = INVISION_POWER;
+    }
+    public Movable(final Atom theLoc, String theName, final double theVisionPower, final double theInvisiblePower) {
+        super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
+        setLoc(theLoc);
+        myVisionPower = theVisionPower;
+        myInvisiblePower = theInvisiblePower;
     }
 
     public Atom getLoc() {
@@ -25,7 +46,25 @@ public abstract class Movable extends Atom {
         if(theDest != null) {
             theDest.addContents(this);
             setCoords(theDest.getCoords());
+        } else {
+            setCoords(new int[]{-1,-1,-1});
         }
+    }
+
+    public double getVisionPower() {
+        return myVisionPower;
+    }
+
+    public void setVisible(final double theVisionPower) {
+        myVisionPower = theVisionPower;
+    }
+
+    public double getInivisiblePower() {
+        return myInvisiblePower;
+    }
+    
+    public void setInvisiblePower(final double theInvisiblePower) {
+        myInvisiblePower = theInvisiblePower;
     }
 
     ///get all atoms that contain us and what contains us and what contains that and so on
@@ -34,8 +73,7 @@ public abstract class Movable extends Atom {
         Atom loc = getLoc();
         while(loc != null) {
             retList.add(loc);
-            if(loc instanceof Movable) {
-                Movable MLoc = (Movable) loc;
+            if(loc instanceof Movable MLoc) {
                 loc = MLoc.getLoc();
             } else {
                 break;
@@ -79,4 +117,5 @@ public abstract class Movable extends Atom {
     protected void bump(final Atom theDest, final Atom theObstacle) {
 
     }
+
 }
