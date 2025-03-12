@@ -19,7 +19,7 @@ public class View {
     private final CardLayout cardLayout;
     private final TitleScreenPanel titleScreen;
     private final JPanel dungeonPanel;
-    private final static JButton[][] rooms = new JButton[5][5];
+    private JButton[][] rooms = new JButton[5][5];
     private String selectedHero = "";  // To store the selected hero
     private Hero hero;  // The player's hero
 
@@ -46,6 +46,10 @@ public class View {
         frame.add(mainPanel);
         cardLayout.show(mainPanel, "TitleScreen"); // Show title screen first
         frame.setVisible(true);
+    }
+
+    public String getHero() {
+        return selectedHero;
     }
 
     // Initialize dungeon grid
@@ -95,21 +99,21 @@ public class View {
             this.selectedHero = chosenHero;
             System.out.println(selectedHero + " selected!");
 
-            // Create the hero object based on selection
-            Room initialRoom = new Room(new int[]{0, 0}, "Starting Room"); // Example room for hero location
-            switch (chosenHero) {
-                case "Warrior":
-                    this.hero = new Warrior(initialRoom); 
-                    break;
-                case "Thief":
-                    this.hero = new Thief(initialRoom);  
-                    break;
-                case "Priestess":
-                    this.hero = new Priestess(initialRoom); 
-                    break;
-                default:
-                    this.hero = new Warrior(initialRoom); // Default to Warrior if invalid
-            }
+            //// Create the hero object based on selection
+            //Room initialRoom = new Room(new int[]{0, 0}, "Starting Room"); // Example room for hero location
+            //switch (chosenHero) {
+            //    case "Warrior":
+            //        this.hero = new Warrior(initialRoom); 
+            //        break;
+            //    case "Thief":
+            //        this.hero = new Thief(initialRoom);  
+            //        break;
+            //    case "Priestess":
+            //        this.hero = new Priestess(initialRoom); 
+            //        break;
+            //    default:
+            //        this.hero = new Warrior(initialRoom); // Default to Warrior if invalid
+            //}
 
             // Initialize dungeon grid and switch to it
             initializeDungeon();

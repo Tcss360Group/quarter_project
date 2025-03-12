@@ -14,11 +14,15 @@ public class Main {
         return controller;
     }
 
-    public static void main(String[] args) {
-        testBasicWorldGen(4, 4);
+    public static void main(String[] args) throws Exception {
+        try {
+            testBasicWorldGen(4, 4); 
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
-    public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) {
+    public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) throws Exception {
 
         int size = (int)Math.sqrt(theRoomsPerFloor) * 2;
         DungeonGenerationOptions options = new DungeonGenerationOptions(
@@ -32,7 +36,11 @@ public class Main {
         GameController controller = new GameController(options);
         setController(controller);
         controller.init();
-        controller.start();
+        try {
+            controller.start();
+        } catch(Exception e) {
+            throw e;
+        }
     }
 
     public static void testBasicMovement() {

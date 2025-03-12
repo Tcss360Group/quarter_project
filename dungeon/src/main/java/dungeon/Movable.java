@@ -49,6 +49,15 @@ public abstract class Movable extends Atom {
         myInvisiblePower = theInvisiblePower;
     }
 
+    ///get the outermost atom containing us and anything containing us and anything containing that...
+    public Atom getOuterLoc() {
+        Atom ret = getLoc();
+        while(ret instanceof Movable retM) {
+            ret = retM.getLoc();
+        }
+        return ret;
+    }
+    
     ///get all atoms that contain us and what contains us and what contains that and so on
     public ArrayList<Atom> getRecursiveLocs() {
         ArrayList<Atom> retList = new ArrayList<>();

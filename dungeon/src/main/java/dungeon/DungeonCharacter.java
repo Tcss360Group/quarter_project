@@ -25,7 +25,7 @@ public abstract class DungeonCharacter extends Movable {
         myVisionPower = VISION_POWER;
     }
 
-    // Called every tick to make this DC perform an action
+    /// Called every tick to make this DC perform an action
     public void pollAction() {
     }
 
