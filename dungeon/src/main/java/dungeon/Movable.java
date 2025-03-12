@@ -7,31 +7,20 @@ import java.util.ArrayList;
  */
 public abstract class Movable extends Atom {
 
-    private static final double VISION_POWER = VisionPower.NONE.power();
     private static final double INVISION_POWER = VisionPower.NONE.power();
 
     private Atom myLoc;
-    ///states whether this movable is visible to the player
-    private double myVisionPower;
     /// if the invisibility of an object is greater than the vision power of a mob then that mob cant see that object
     private double myInvisiblePower;
 
     public Movable(final Atom theLoc, String theName) {
         super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
         setLoc(theLoc);
-        myVisionPower = VISION_POWER;
         myInvisiblePower = INVISION_POWER;
     }
-    public Movable(final Atom theLoc, String theName, final double theVisionPower) {
+    public Movable(final Atom theLoc, String theName, final double theInvisiblePower) {
         super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
         setLoc(theLoc);
-        myVisionPower = theVisionPower;
-        myInvisiblePower = INVISION_POWER;
-    }
-    public Movable(final Atom theLoc, String theName, final double theVisionPower, final double theInvisiblePower) {
-        super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
-        setLoc(theLoc);
-        myVisionPower = theVisionPower;
         myInvisiblePower = theInvisiblePower;
     }
 
@@ -51,13 +40,6 @@ public abstract class Movable extends Atom {
         }
     }
 
-    public double getVisionPower() {
-        return myVisionPower;
-    }
-
-    public void setVisible(final double theVisionPower) {
-        myVisionPower = theVisionPower;
-    }
 
     public double getInivisiblePower() {
         return myInvisiblePower;

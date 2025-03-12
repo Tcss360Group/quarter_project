@@ -1,12 +1,17 @@
 package dungeon;
 
 public abstract class DungeonCharacter extends Movable {
+
+    private static final double VISION_POWER = VisionPower.NONE.power();
+
     private double health;
     private final double maxHealth;  // Store the initial max health
     private double damage;
     private double range;
     private int attackSpeed;
     private double hitChance;
+    /// any other movable in the room with a vision power lower than this can be seen by 
+    private double myVisionPower;
 
     public DungeonCharacter(final Atom theLoc, final String theName, final double health, final double damage,
             final double range, final int attackSpeed, final double hitChance) {
@@ -17,6 +22,7 @@ public abstract class DungeonCharacter extends Movable {
         this.range = range;
         this.attackSpeed = attackSpeed;
         this.hitChance = hitChance;
+        myVisionPower = VISION_POWER;
     }
 
     // Called every tick to make this DC perform an action
@@ -49,6 +55,14 @@ public abstract class DungeonCharacter extends Movable {
 
     public double getHitChance() {
         return hitChance;
+    }
+
+    public double getVisionPower() {
+        return myVisionPower;
+    }
+
+    public void setVisible(final double theVisionPower) {
+        myVisionPower = theVisionPower;
     }
 
     public abstract double attack();
