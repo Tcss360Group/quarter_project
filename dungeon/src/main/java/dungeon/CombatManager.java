@@ -2,6 +2,8 @@ package dungeon;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -16,40 +18,30 @@ import javax.swing.JTextArea;
 
 public class CombatManager {
     private static final Random rand = new Random();
+    private static final int HEALTH_POTION_HEAL_AMOUNT = 30; // Health restored by potion
 
-    // This method is invoked to start a battle
     public static void battle(JFrame parentFrame, Hero hero, Monster monster) {
-        // Create the battle dialog
         JDialog battleDialog = new JDialog(parentFrame, "Battle", true);
         battleDialog.setLayout(new BorderLayout());
         battleDialog.setSize(500, 400);
 
-        // Create the battle message panel
         JPanel messagePanel = new JPanel();
-
-        // JTextArea for battle messages
         JTextArea battleMessage = new JTextArea(10, 30);
         battleMessage.setEditable(false);
         battleMessage.setText("Battle started between " + hero.getName() + " and " + monster.getName() + "\n");
         messagePanel.add(new JScrollPane(battleMessage));
 
-        // Create health bars for hero and monster
         JPanel healthPanel = new JPanel();
         healthPanel.setLayout(new BorderLayout());
 
-        // Create and set up labels for hero and monster HP
         JLabel heroLabel = new JLabel("Hero HP: ");
         JLabel monsterLabel = new JLabel("Monster HP: ");
         heroLabel.setPreferredSize(new Dimension(100, 25));
         monsterLabel.setPreferredSize(new Dimension(100, 25));
 
-        // Hero health bar
         JProgressBar heroHealthBar = createHealthBar(hero.getHealth(), hero.getMaxHealth());
-
-        // Monster health bar
         JProgressBar monsterHealthBar = createHealthBar(monster.getHealth(), monster.getMaxHealth());
 
-        // Add labels and health bars to healthPanel
         JPanel heroPanel = new JPanel();
         heroPanel.add(heroLabel);
         heroPanel.add(heroHealthBar);
@@ -58,16 +50,14 @@ public class CombatManager {
         monsterPanel.add(monsterLabel);
         monsterPanel.add(monsterHealthBar);
 
-        // Add the panels to the healthPanel
         healthPanel.add(heroPanel, BorderLayout.NORTH);
         healthPanel.add(monsterPanel, BorderLayout.SOUTH);
 
-        // Create the action buttons panel
         JPanel actionPanel = new JPanel();
         JButton attackButton = new JButton("Regular Attack");
         JButton specialButton = new JButton("Special Attack");
+        JButton healthPotionButton = new JButton("Use Health Potion"); // New button
 
-        // Regular Attack Button ActionListener
         attackButton.addActionListener(e -> {
             double heroAttackDamage = hero.attack();
             battleMessage.append(hero.getName() + " attacks and deals " + heroAttackDamage + " damage to " + monster.getName() + "\n");
@@ -75,87 +65,110 @@ public class CombatManager {
             monster.setHealth(monster.getHealth() - heroAttackDamage);
             updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
 
-            // Check if monster is defeated
             if (monster.getHealth() <= 0) {
                 battleMessage.append(monster.getName() + " has been defeated!\n");
-                endBattle(battleDialog);
+                endBattle(battleDialog, hero);
             } else {
-                // Monster attacks back
-                double monsterAttackDamage = monster.attack();
-                hero.setHealth(hero.getHealth() - monsterAttackDamage);
-                updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());
-                battleMessage.append(monster.getName() + " attacks and deals " + monsterAttackDamage + " damage to " + hero.getName() + "\n");
-                battleMessage.append(hero.getName() + " Health: " + hero.getHealth() + "\n");
-
-                // Check if hero is defeated
-                if (hero.getHealth() <= 0) {
-                    battleMessage.append(hero.getName() + " has been defeated!\n");
-                    endBattle(battleDialog);
-                }
+                monsterTurn(hero, monster, battleMessage, heroHealthBar, battleDialog);
             }
         });
 
-        // Special Attack Button ActionListener
         specialButton.addActionListener(e -> {
             battleMessage.append(hero.getName() + " uses special skill!\n");
-            
-            // Call the hero's unique special skill
             hero.useSpecialSkill();
-
-            // Update monster's health after the skill is used
             updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
 
-            // Check if monster is defeated
             if (monster.getHealth() <= 0) {
                 battleMessage.append(monster.getName() + " has been defeated!\n");
-                endBattle(battleDialog);
+                endBattle(battleDialog, hero);
             } else {
-                // Monster attacks back
-                double monsterAttackDamage = monster.attack();
-                hero.setHealth(hero.getHealth() - monsterAttackDamage);
-                updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());
-                battleMessage.append(monster.getName() + " attacks and deals " + monsterAttackDamage + " damage to " + hero.getName() + "\n");
-                battleMessage.append(hero.getName() + " Health: " + hero.getHealth() + "\n");
-
-                // Check if hero is defeated
-                if (hero.getHealth() <= 0) {
-                    battleMessage.append(hero.getName() + " has been defeated!\n");
-                    endBattle(battleDialog);
-                }
+                monsterTurn(hero, monster, battleMessage, heroHealthBar, battleDialog);
             }
+        });
+
+        // Health Potion Button ActionListener
+        healthPotionButton.addActionListener(e -> {
+            if (hero.getHealth() <= 0) {
+                battleMessage.append("You cannot use a potion. " + hero.getName() + " has been defeated!\n");
+                return;
+            }
+
+            double newHealth = Math.min(hero.getHealth() + HEALTH_POTION_HEAL_AMOUNT, hero.getMaxHealth());
+            double healedAmount = newHealth - hero.getHealth();
+            hero.setHealth(newHealth);
+
+            battleMessage.append(hero.getName() + " used a Health Potion and restored " + (int) healedAmount + " HP!\n");
+            updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());
+
+            // Monster's turn after using a potion
+            monsterTurn(hero, monster, battleMessage, heroHealthBar, battleDialog);
         });
 
         actionPanel.add(attackButton);
         actionPanel.add(specialButton);
+        actionPanel.add(healthPotionButton);
 
         battleDialog.add(messagePanel, BorderLayout.CENTER);
         battleDialog.add(healthPanel, BorderLayout.NORTH);
         battleDialog.add(actionPanel, BorderLayout.SOUTH);
 
-        // Show the battle dialog
+        // Cheat Code: Press F1 to Auto-Win
+        battleDialog.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_F1) { // If F1 is pressed
+                    battleMessage.append("\n*** CHEAT ACTIVATED! ***\n");
+                    battleMessage.append(hero.getName() + " instantly defeats " + monster.getName() + "!\n");
+
+                    monster.setHealth(0);
+                    updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
+                    endBattle(battleDialog, hero);
+                }
+            }
+        });
+
+
+        battleDialog.setFocusable(true);
+        battleDialog.requestFocusInWindow(); // Ensure key events are captured
         battleDialog.setLocationRelativeTo(parentFrame);
         battleDialog.setVisible(true);
     }
 
-    // Create and configure health progress bar
     private static JProgressBar createHealthBar(double currentHealth, double maxHealth) {
         JProgressBar healthBar = new JProgressBar(0, (int) maxHealth);
         healthBar.setValue((int) currentHealth);
-        healthBar.setString((int) currentHealth + " / " + (int) maxHealth); // Show health values
+        healthBar.setString((int) currentHealth + " / " + (int) maxHealth);
         healthBar.setStringPainted(true);
         healthBar.setPreferredSize(new Dimension(200, 25));
         return healthBar;
     }
 
-    // Method to update health bar values in real-time
     private static void updateHealthBar(JProgressBar healthBar, double currentHealth, double maxHealth) {
         healthBar.setValue((int) currentHealth);
-        healthBar.setString((int) currentHealth + " / " + (int) maxHealth); // Update displayed text
+        healthBar.setString((int) currentHealth + " / " + (int) maxHealth);
     }
 
-    // Method to close the battle dialog once a character has been defeated
-    private static void endBattle(JDialog battleDialog) {
-        JOptionPane.showMessageDialog(battleDialog, "The battle is over!");
-        battleDialog.dispose();  // Close the dialog
+    private static void monsterTurn(Hero hero, Monster monster, JTextArea battleMessage, JProgressBar heroHealthBar, JDialog battleDialog) {
+        if (monster.getHealth() > 0) {
+            double monsterAttackDamage = monster.attack();
+            hero.setHealth(hero.getHealth() - monsterAttackDamage);
+            updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());
+            battleMessage.append(monster.getName() + " attacks and deals " + monsterAttackDamage + " damage to " + hero.getName() + "\n");
+
+            if (hero.getHealth() <= 0) {
+                battleMessage.append(hero.getName() + " has been defeated!\n");
+                endBattle(battleDialog, hero);
+            }
+        }
+    }
+
+    private static void endBattle(JDialog battleDialog, Hero hero) {
+        if (hero.getHealth() <= 0) {
+            JOptionPane.showMessageDialog(battleDialog, "Game Over! " + hero.getName() + " has been defeated.", "Game Over", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        } else {
+            JOptionPane.showMessageDialog(battleDialog, "The battle is over!");
+            battleDialog.dispose();
+        }
     }
 }

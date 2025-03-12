@@ -67,16 +67,24 @@ public class View {
         @Override
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
-            if (command.equals("New Game")) {
-                // Show hero selection dialog before starting the game
-                showHeroSelectionDialog();
-            } else if (command.equals("Load Game")) {
-                JOptionPane.showMessageDialog(frame, "Implement");
-            } else if (command.equals("Exit")) {
-                System.exit(0);
+
+            switch (command) {
+                case "New Game":
+                    // Show hero selection dialog before starting the game
+                    showHeroSelectionDialog();
+                    break;
+                case "Load Game":
+                    JOptionPane.showMessageDialog(frame, "Implement");
+                    break;
+                case "Exit":
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Unknown command: " + command);
             }
         }
     }
+
 
     private void showHeroSelectionDialog() {
         // Create hero options
