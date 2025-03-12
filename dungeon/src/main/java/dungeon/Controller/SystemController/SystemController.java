@@ -77,11 +77,6 @@ public abstract class SystemController {
 
     }
 
-    /// dont extend this at all, this is what GameController calls on the SystemController when its ready to fire and is meant to later coordinate state
-    public void ignite(final boolean resumed) {
-        fire(resumed);
-    }
-
     /**
      * process whatever is necessary for this SystemController, if anything.
      * by default just sets CanFire to false

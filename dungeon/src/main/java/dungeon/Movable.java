@@ -7,11 +7,21 @@ import java.util.ArrayList;
  */
 public abstract class Movable extends Atom {
 
+    private static final double INVISION_POWER = VisionPower.NONE.power();
+
     private Atom myLoc;
+    /// if the invisibility of an object is greater than the vision power of a mob then that mob cant see that object
+    private double myInvisiblePower;
 
     public Movable(final Atom theLoc, String theName) {
         super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
         setLoc(theLoc);
+        myInvisiblePower = INVISION_POWER;
+    }
+    public Movable(final Atom theLoc, String theName, final double theInvisiblePower) {
+        super(theLoc != null ? theLoc.getCoords() : new int[]{0,0,0}, theName);
+        setLoc(theLoc);
+        myInvisiblePower = theInvisiblePower;
     }
 
     public Atom getLoc() {
@@ -25,17 +35,36 @@ public abstract class Movable extends Atom {
         if(theDest != null) {
             theDest.addContents(this);
             setCoords(theDest.getCoords());
+        } else {
+            setCoords(new int[]{-1,-1,-1});
         }
     }
 
+
+    public double getInivisiblePower() {
+        return myInvisiblePower;
+    }
+    
+    public void setInvisiblePower(final double theInvisiblePower) {
+        myInvisiblePower = theInvisiblePower;
+    }
+
+    ///get the outermost atom containing us and anything containing us and anything containing that...
+    public Atom getOuterLoc() {
+        Atom ret = getLoc();
+        while(ret instanceof Movable retM) {
+            ret = retM.getLoc();
+        }
+        return ret;
+    }
+    
     ///get all atoms that contain us and what contains us and what contains that and so on
     public ArrayList<Atom> getRecursiveLocs() {
         ArrayList<Atom> retList = new ArrayList<>();
         Atom loc = getLoc();
         while(loc != null) {
             retList.add(loc);
-            if(loc instanceof Movable) {
-                Movable MLoc = (Movable) loc;
+            if(loc instanceof Movable MLoc) {
                 loc = MLoc.getLoc();
             } else {
                 break;
@@ -79,4 +108,5 @@ public abstract class Movable extends Atom {
     protected void bump(final Atom theDest, final Atom theObstacle) {
 
     }
+
 }
