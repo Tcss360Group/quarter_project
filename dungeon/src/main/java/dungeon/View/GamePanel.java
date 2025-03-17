@@ -92,9 +92,8 @@ public class GamePanel extends Canvas implements Runnable {
 
 
             render(g); 
-            bufferStrategy.show(); 
 
-            if(myMouseIsOver || clickedPoint != null) {
+            if(myMouseIsOver == true || clickedPoint != null) {
                 if(myMousePos != null && !myMousePos.equals(lastMousePos)) { 
                     lastMousePos = (Point)myMousePos.clone();
                 }
@@ -107,14 +106,15 @@ public class GamePanel extends Canvas implements Runnable {
                                 if(clickedPoint != null) {
                                     outputQueue.add(new ClickedOn(view));
                                 }
-                                //g.setColor(Color.BLACK);
-                                //g.drawString(view.getName(), 10, getHeight() - 10);
+                                g.setColor(Color.BLACK);
+                                g.drawString(view.getName() + " id: " + view.getID() + " point: " + posToUse.toString() , 10, getHeight() / 2);
                                 break;
                             }
                         }
                     }
                 } 
             }
+            bufferStrategy.show(); 
 
             g.dispose(); 
             sleepForABit(startTime);

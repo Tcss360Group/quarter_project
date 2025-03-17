@@ -1,4 +1,5 @@
 package dungeon.View;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -98,6 +99,9 @@ public class AtomView implements Shape {
         //    }
         //}
 
+        //g.setColor(Color.RED);
+        //Point2D point1 = getScreenSpaceTransform().transform(new Point2D.Double(0,0), null);
+        //g.fillRect((int)point1.getX(), (int)point1.getY(), 100, 100);
         //System.out.println("width: " + image.getWidth() + " height: " + image.getHeight() + " type: " + image.getType());
         Point2D point = getScreenSpaceTransform().transform(new Point2D.Double(0,0), null);
         g.drawImage(mySprite.getImage(), null, (int)point.getX(), (int)point.getY());
@@ -105,7 +109,12 @@ public class AtomView implements Shape {
 
     @Override
     public Rectangle getBounds() {
-        return (Rectangle) myScreenSpaceTransform.createTransformedShape(new Rectangle(0, 0, mySprite.getImage().getWidth(), mySprite.getImage().getWidth())).getBounds();
+        Rectangle first = new Rectangle(0, 0, mySprite.getImage().getWidth(), mySprite.getImage().getHeight());
+        Shape transform = myScreenSpaceTransform.createTransformedShape(first);
+
+        Rectangle ret = (Rectangle) myScreenSpaceTransform.createTransformedShape(new Rectangle(0, 0, mySprite.getImage().getWidth(), mySprite.getImage().getHeight())).getBounds();
+        int i = 1;
+        return ret;
 
         //throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -117,12 +126,24 @@ public class AtomView implements Shape {
 
     @Override
     public boolean contains(double x, double y) {
-        return getBounds().contains(x,y);
+        Point2D point = new Point2D.Double(x,y);
+        try {
+
+            point = AffineTransform.getTranslateInstance(myScreenSpaceTransform.getTranslateX(), myScreenSpaceTransform.getTranslateY()).inverseTransform(point, null);
+        } catch(Exception e) {
+            int d = 1;
+        }
+
+        int width = mySprite.getImage().getWidth();
+        int height = mySprite.getImage().getHeight();
+        return point.getX() >= 0 && point.getX() < mySprite.getImage().getWidth() && point.getY() >= 0 && point.getY() < mySprite.getImage().getHeight();
+        //return getBounds().contains(x,y);
+
     }
 
     @Override
     public boolean contains(Point2D p) {
-        return getBounds().contains(p);
+        return contains(p.getX(), p.getY());
         //throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -177,6 +198,10 @@ public class AtomView implements Shape {
     }
     public AffineTransform getTransform() {
         return (AffineTransform)myTransform.clone();
+    }
+
+    public int getID() {
+        return myID;
     }
 
 }

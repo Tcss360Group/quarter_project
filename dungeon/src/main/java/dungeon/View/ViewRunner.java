@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import dungeon.Atom;
+import dungeon.Main;
 import dungeon.Controller.GameController;
 import dungeon.Messages.MTV.ChangeState;
 import dungeon.Messages.MTV.ModelToViewMessage;
@@ -113,14 +114,19 @@ public class ViewRunner {
         myToGamePanelQueue = new LinkedBlockingQueue<>() {
             @Override
             public boolean add(ViewToRenderMessage toAdd) {
-                System.out.println("VTRQueue.add(): " + toAdd.toString());
+
+                if(Main.getDebugConcurrency()) {
+                    System.out.println("VTRQueue.add(): " + toAdd.toString());
+                }
                 return super.add(toAdd);
             }
             @Override
             public ViewToRenderMessage poll() {
                 ViewToRenderMessage ret = super.poll();
                 if(ret != null) {
-                    System.out.println("VTRQueue poll() got " + ret.toString());
+                    if(Main.getDebugConcurrency()) {
+                        System.out.println("VTRQueue poll() got " + ret.toString());
+                    }
                 }
                 return ret;
             }
@@ -129,13 +135,19 @@ public class ViewRunner {
 
             @Override
             public boolean add(RenderToViewMessage toAdd) {
-                System.out.println("RTVQueue added " + toAdd.toString());
+
+                if(Main.getDebugConcurrency()) {
+                    System.out.println("RTVQueue added " + toAdd.toString());
+                }
                 return super.add(toAdd);
             }
             @Override
             public RenderToViewMessage poll() {
                 RenderToViewMessage ret = super.poll();
-                System.out.println("RTVQueue poll() got " + ret.toString());
+
+                if(Main.getDebugConcurrency()) {
+                    System.out.println("RTVQueue poll() got " + ret.toString());
+                }
                 return ret;
             }
         };
@@ -177,7 +189,7 @@ public class ViewRunner {
 
         while(!in.isEmpty()) {
             ModelToViewMessage input = in.remove();
-            System.out.println("ViewRunner.checkQueues() received MTV input: " + input.toString());
+            //System.out.println("ViewRunner.checkQueues() received MTV input: " + input.toString());
             if(input instanceof ChangeState cs) {
                 if(myState == ViewState.MAIN_MENU && cs.state == ViewState.GAME) {
                     cardLayout.show(mainPanel, "Dungeon");
