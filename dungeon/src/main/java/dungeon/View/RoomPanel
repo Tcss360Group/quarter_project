@@ -1,0 +1,132 @@
+package View;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.util.Random;
+
+public class RoomPanel extends JPanel {
+
+    private static final int SIZE = 5;
+    private String[][] grid;
+    private static final String HERO = "Hero";
+    private static final String OGRE = "Ogre";
+    private static final String SKELETON = "Skeleton";
+    private static final String GREMLIN = "Gremlin";
+
+    public RoomPanel() {
+        grid = new String[SIZE][SIZE];
+        initializeGrid();
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = e.getY() / 100;
+                int col = e.getX() / 100;
+                System.out.println("Mouse clicked at: (" + row + ", " + col + ")");
+            }
+        });
+
+        // Make RoomPanel focusable for keys
+        setFocusable(true);
+    }
+
+    private void initializeGrid() {
+        // Place the hero in the center 
+        grid[SIZE / 2][SIZE / 2] = HERO;
+
+        Random random = new Random();
+        int totalCreatures = 0;
+
+        // Randomly determine the number of each monster 
+        int numOgres = random.nextInt(3); // 0-2 Ogres
+        int numSkeletons = random.nextInt(3); // 0-2 Skeletons
+        int numGremlins = random.nextInt(3); // 0-2 Gremlins
+
+        // Adjust if the total exceeds 5 (setting the limit to 5 for now)
+        while (numOgres + numSkeletons + numGremlins > 5) {
+            numOgres = random.nextInt(3);
+            numSkeletons = random.nextInt(3);
+            numGremlins = random.nextInt(3);
+        }
+
+        // Place Ogres
+        totalCreatures += placeCreatures(numOgres, OGRE, random);
+
+        // Place Skeletons
+        totalCreatures += placeCreatures(numSkeletons, SKELETON, random);
+
+        // Place Gremlins
+        placeCreatures(numGremlins, GREMLIN, random);
+    }
+    //Produces which keys are being pressed to the console
+    private void setKeyBindings() {
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "printW");
+        getActionMap().put("printW", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("W pressed");
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "printS");
+        getActionMap().put("printS", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("S pressed");
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "printA");
+        getActionMap().put("printA", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("A pressed");
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "printD");
+        getActionMap().put("printD", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("D pressed");
+            }
+        });
+    }
+
+    private int placeCreatures(int numCreatures, String creature, Random random) {
+        int placed = 0;
+        while (placed < numCreatures) {
+            int i = random.nextInt(SIZE);
+            int j = random.nextInt(SIZE);
+            if (grid[i][j] == null) {
+                grid[i][j] = creature;
+                placed++;
+            }
+        }
+        return placed;
+    }
+
+    @Override
+    //Drawing rooms 
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        setBackground(Color.gray);
+        g.setColor(Color.black);
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                g.drawRect(j * 100, i * 100, 100, 100);
+                if (grid[i][j] != null) {
+                    g.drawString(grid[i][j], j * 100 + 40, i * 100 + 50);
+                }
+            }
+        }
+    }
+}
+        

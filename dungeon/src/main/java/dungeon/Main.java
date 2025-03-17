@@ -14,13 +14,22 @@ public class Main {
         return controller;
     }
 
+<<<<<<< Updated upstream
     public static void main(String[] args) {
         testBasicWorldGen(4, 4);
+=======
+    public static void main(String[] args) throws Exception {
+        try {
+            testBasicWorldGen(12, 4); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+>>>>>>> Stashed changes
     }
 
     public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) {
 
-        int size = (int)Math.sqrt(theRoomsPerFloor) * 2;
+        int size = theRoomsPerFloor;
         DungeonGenerationOptions options = new DungeonGenerationOptions(
                 theRoomsPerFloor,
                 theNumFloors,
