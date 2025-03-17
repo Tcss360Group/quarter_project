@@ -11,12 +11,16 @@ import dungeon.Dir;
 import dungeon.Door;
 import dungeon.DungeonCharacter;
 import dungeon.DungeonGenerationOptions;
+import dungeon.Hero;
 import dungeon.HeroStartPoint;
 import dungeon.Ogre;
 import dungeon.Pillar;
+import dungeon.Priestess;
 import dungeon.Room;
 import dungeon.Skeleton;
 import dungeon.Stairs;
+import dungeon.Thief;
+import dungeon.Warrior;
 
 /**
  * handles generating the world
@@ -67,9 +71,34 @@ public final class DungeonGenerator extends SystemController {
         GameController controller = getController();
         AtomLoader loader = (AtomLoader) controller.getSystemController(SystemControllerName.AtomLoader);
         CreateMapRet mapAndAtoms = createMap(controller.getOptions());
+
+        MainMenu menu = (MainMenu)controller.getSystemController(SystemControllerName.MainMenu);
+        String selectedHero = menu.getHeroSelection(); // this sucks man i need to figure something better out
+
+        HeroStartPoint landMark = mapAndAtoms.startPoint;
+        Room startPoint = (Room)landMark.getOuterLoc();
+        Hero hero = null;
+        switch (selectedHero) {
+            case "Warrior":
+                hero = new Warrior(startPoint); 
+                break;
+            case "Thief":
+                hero = new Thief(startPoint);  
+                break;
+            case "Priestess":
+                hero = new Priestess(startPoint); 
+                break;
+            default:
+                hero = new Warrior(startPoint); // Default to Warrior if invalid
+        }
+        controller.setPlayer(hero);
+        mapAndAtoms.characters.add(hero);
+        mapAndAtoms.atoms.add(hero);
+
         controller.setMap(mapAndAtoms.map);
         controller.setMobs(mapAndAtoms.characters);
         loader.stageAtoms(mapAndAtoms.atoms, true);
+        controller.setState(GameState.HAPPENING);
     }
 
     public class CreateMapRet {
@@ -99,6 +128,9 @@ public final class DungeonGenerator extends SystemController {
             DungeonGenerationFloor floor = floors.get(depth - 1 - i); //floors are generated top down, we're placing them bottom up
             ret.characters.addAll(floor.myCharacters);
             ret.atoms.addAll(floor.myAtoms);
+            if(floor.myStartPoint != null) {
+                ret.startPoint = floor.myStartPoint;
+            }
             for (int j = 0; j < height; j++) {
                 for (int k = 0; k < width; k++) {
                     ret.map[i][j][k] = floor.myMap[j][k];

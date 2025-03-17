@@ -1,12 +1,5 @@
 package dungeon.Controller.SystemController;
 
-<<<<<<< Updated upstream
-=======
-import java.util.concurrent.BlockingQueue;
-
-import javax.swing.SwingUtilities;
-
->>>>>>> Stashed changes
 import dungeon.Controller.GameController;
 import dungeon.Controller.GameState;
 import dungeon.Messages.MTV.ChangeState;
@@ -21,18 +14,33 @@ import dungeon.View.ViewState;
 public class MainMenu extends SystemController {
     private static final SystemControllerName NAME = SystemControllerName.MainMenu;
     private static final GameState INIT_STATE = GameState.MAIN_MENU;
-    private static final boolean CAN_FIRE = false;
+    private static final boolean CAN_FIRE = true;
+
+    private boolean myHasStarted = false;
+    private boolean myIsDone = false;
+    /// what hero the player selected
+    private String myHeroSelection = null;
 
     public MainMenu(final GameController theController) {
         super(theController, NAME, INIT_STATE, CAN_FIRE);
     }
 
+    public String getHeroSelection() {
+        return myHeroSelection;
+    }
+    public void setHeroSelection(final String theHeroSelection) {
+        myHeroSelection = theHeroSelection;
+    }
+
     @Override
     public void initialize() {
+        //GameController controller = getController();
+        //controller.setState(GameState.LOADING);
+    }
+
+    @Override
+    public void fire(final boolean resumed) {
         GameController controller = getController();
-<<<<<<< Updated upstream
-        controller.setState(GameState.LOADING);
-=======
         if(myHasStarted == false) {
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
@@ -103,6 +111,5 @@ public class MainMenu extends SystemController {
             //controller.setView(null);
             controller.setState(GameState.LOADING);
         }
->>>>>>> Stashed changes
     }
 }
