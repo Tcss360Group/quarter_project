@@ -20,7 +20,7 @@ public class CombatManager {
     private static final Random rand = new Random();
     private static final int HEALTH_POTION_HEAL_AMOUNT = 30; // Health restored by potion
 
-    public static void battle(JFrame parentFrame, Hero hero, Monster monster) {
+    public static void battle(JFrame parentFrame, DungeonCharacter hero, DungeonCharacter monster) {
         JDialog battleDialog = new JDialog(parentFrame, "Battle", true);
         battleDialog.setLayout(new BorderLayout());
         battleDialog.setSize(500, 400);
@@ -75,7 +75,9 @@ public class CombatManager {
 
         specialButton.addActionListener(e -> {
             battleMessage.append(hero.getName() + " uses special skill!\n");
-            hero.useSpecialSkill();
+            if(hero instanceof Hero hro) {
+                hro.useSpecialSkill();
+            }
             updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
 
             if (monster.getHealth() <= 0) {
@@ -148,7 +150,7 @@ public class CombatManager {
         healthBar.setString((int) currentHealth + " / " + (int) maxHealth);
     }
 
-    private static void monsterTurn(Hero hero, Monster monster, JTextArea battleMessage, JProgressBar heroHealthBar, JDialog battleDialog) {
+    private static void monsterTurn(DungeonCharacter hero, DungeonCharacter monster, JTextArea battleMessage, JProgressBar heroHealthBar, JDialog battleDialog) {
         if (monster.getHealth() > 0) {
             double monsterAttackDamage = monster.attack();
             hero.setHealth(hero.getHealth() - monsterAttackDamage);
@@ -162,7 +164,7 @@ public class CombatManager {
         }
     }
 
-    private static void endBattle(JDialog battleDialog, Hero hero) {
+    private static void endBattle(JDialog battleDialog, DungeonCharacter hero) {
         if (hero.getHealth() <= 0) {
             JOptionPane.showMessageDialog(battleDialog, "Game Over! " + hero.getName() + " has been defeated.", "Game Over", JOptionPane.ERROR_MESSAGE);
             System.exit(0);

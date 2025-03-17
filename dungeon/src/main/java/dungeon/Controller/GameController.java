@@ -14,9 +14,16 @@ import dungeon.Controller.SystemController.InitializerTest;
 import dungeon.Controller.SystemController.MainMenu;
 import dungeon.Controller.SystemController.SystemController;
 import dungeon.Controller.SystemController.SystemControllerName;
+import dungeon.Messages.MTV.ModelToViewMessage;
+import dungeon.Messages.VTM.ViewToModelMessage;
+import dungeon.View.ViewRunner;
 import dungeon.DungeonCharacter;
 import dungeon.DungeonGenerationOptions;
 import dungeon.Hero;
+import dungeon.HeroStartPoint;
+import dungeon.Main;
+import dungeon.Pillar;
+import dungeon.Room;
 
 
 /**
@@ -29,6 +36,7 @@ public final class GameController {
     public static final int WIDTH = Atom.X;
     public static final int HEIGHT = Atom.Y;
     public static final int DEPTH = Atom.Z;
+
 
     private ArrayList<DungeonCharacter> myMobs;
     private Hero myPlayer;
@@ -83,7 +91,9 @@ public final class GameController {
         myMTVQueue = new LinkedBlockingQueue<>(){
             @Override
             public boolean add(ModelToViewMessage toAdd) {
-                System.out.println("MTVQueue added " + toAdd.toString());
+                if(Main.getDebugConcurrency()) {
+                    System.out.println("MTVQueue added " + toAdd.toString());
+                }
                 return super.add(toAdd);
             }
             @Override
@@ -91,7 +101,9 @@ public final class GameController {
                 ModelToViewMessage ret = super.poll();
                 if(ret != null) {
 
-                    System.out.println("MTVQueue poll() got " + ret.toString());
+                    if(Main.getDebugConcurrency()) {
+                        System.out.println("MTVQueue poll() got " + ret.toString());
+                    }
                 }
                 return ret;
             }
@@ -99,7 +111,9 @@ public final class GameController {
         myVTMQueue = new LinkedBlockingQueue<>() {
             @Override
             public boolean add(ViewToModelMessage toAdd) {
-                System.out.println("VTMQueue added " + toAdd.toString());
+                if(Main.getDebugConcurrency()) {
+                    System.out.println("VTMQueue added " + toAdd.toString());
+                }
                 return super.add(toAdd);
             }
             @Override
@@ -107,7 +121,9 @@ public final class GameController {
                 ViewToModelMessage ret = super.poll();
                 if(ret != null) {
 
-                    System.out.println("VTMQueue poll() got " + ret.toString());
+                    if(Main.getDebugConcurrency()) {
+                        System.out.println("VTMQueue poll() got " + ret.toString());
+                    }
                 }
                 return ret;
             }

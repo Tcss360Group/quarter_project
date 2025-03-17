@@ -5,6 +5,7 @@ import dungeon.Controller.GameController;
 public class Main {
 
     private static GameController controller = null;
+    private static boolean debugConcurrency = false;
 
     private static void setController(final GameController theController) {
         controller = theController;
@@ -12,6 +13,10 @@ public class Main {
 
     public static GameController getController() {
         return controller;
+    }
+
+    public static boolean getDebugConcurrency() {
+        return debugConcurrency;
     }
 
     public static void main(String[] args) throws Exception {

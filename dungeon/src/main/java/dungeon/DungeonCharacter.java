@@ -2,6 +2,9 @@ package dungeon;
 
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 public abstract class DungeonCharacter extends Movable {
 
     private static final double VISION_POWER = VisionPower.NONE.power();
@@ -25,7 +28,7 @@ public abstract class DungeonCharacter extends Movable {
         this.attackSpeed = attackSpeed;
         this.hitChance = hitChance;
         myVisionPower = VISION_POWER;
-        setSprite(new GameSprite("door-S.png", 0., 0., 10.0));
+        setSprite(new GameSprite("bad_guy.png", 0., 0., 10.0));
     }
 
     @Override
@@ -50,25 +53,78 @@ public abstract class DungeonCharacter extends Movable {
                 mov.move(this);
             }
         } else {
-            if(clicked instanceof Room room && playerOuter instanceof Room ourRoom) {
-                ArrayList<Atom> roomContents = ourRoom.getContents();
-                Door portal = null;
-                for(Atom content : roomContents) {
-                    if(content instanceof Door door) {
-                        if(door.getDest() == room) {
-                            portal = door;
-                            break; 
+            if(clicked instanceof Room room && playerOuter instanceof Room) {
+                tryMoveTo(room);
+                if(getOuterLoc() == room) {
+                    DungeonCharacter dg = null;
+                    for(Atom content : room.getContents()) {
+                        if(content instanceof Monster monst && monst != this) {
+                            dg = monst;
+                            break;
                         }
-                    } 
-                }
-                if(portal == null) {
-                    System.out.println("You can't get there because there's no door!");
-                    return;
-                }
+                    }
 
-                move(room);
-            }
+                    if(dg == null) {
+                        return;
+                    }
+
+                    Atom dgOuter = dg.getOuterLoc();
+                    if(!(dgOuter instanceof Room)) {
+                        return;
+                    }
+                    Room dgRoom = (Room)dgOuter;
+                    if(distance(getOuterLoc(), dgRoom) > 0) {
+                        tryMoveTo(dgRoom);
+                    }
+                    if(distance(getOuterLoc(), dgRoom) != 0) {
+                        return;
+                    }
+                    System.out.println("You enter the same room as the " + dg.getName() + ", prepare to fight!");
+                    final DungeonCharacter target = dg;
+                    try {
+
+                        SwingUtilities.invokeAndWait(() -> {
+                            JFrame parentFrame = new JFrame("Game");
+                            parentFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                            parentFrame.setSize(800, 600);
+                            parentFrame.setLocationRelativeTo(null);
+
+                            parentFrame.setVisible(true);
+
+                            CombatManager.battle(parentFrame, this, target);
+                            parentFrame.dispose();
+                        });
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            } 
         }
+    }
+
+    public void tryMoveTo(final Room theOtherRoom) {
+        Atom ourRoomA = getOuterLoc();
+        if(!(ourRoomA instanceof Atom)) {
+            return;
+        }
+        Room ourRoom = (Room)ourRoomA;
+        ArrayList<Atom> roomContents = ourRoom.getContents();
+        Door portal = null;
+        for(Atom content : roomContents) {
+            if(content instanceof Door door) {
+                if(door.getDest() == theOtherRoom) {
+                    portal = door;
+                    break; 
+                }
+            } 
+        }
+        if(portal == null) {
+            System.out.println("You can't get there because there's no door!");
+            return;
+        }
+
+        move(theOtherRoom);
     }
 
     /// Called every tick to make this DC perform an action
