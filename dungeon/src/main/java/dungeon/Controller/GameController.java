@@ -3,10 +3,13 @@ package dungeon.Controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import dungeon.Atom;
 import dungeon.Controller.SystemController.AtomLoader;
 import dungeon.Controller.SystemController.DungeonGenerator;
+import dungeon.Controller.SystemController.InOut;
 import dungeon.Controller.SystemController.InitializerTest;
 import dungeon.Controller.SystemController.MainMenu;
 import dungeon.Controller.SystemController.SystemController;
@@ -14,10 +17,6 @@ import dungeon.Controller.SystemController.SystemControllerName;
 import dungeon.DungeonCharacter;
 import dungeon.DungeonGenerationOptions;
 import dungeon.Hero;
-import dungeon.HeroStartPoint;
-import dungeon.Pillar;
-import dungeon.Room;
-import dungeon.View;
 
 
 /**
@@ -25,6 +24,11 @@ import dungeon.View;
  */
 public final class GameController {
     //"global" info that i havent figured out where else to put yet TODO: dedicated singletons
+
+    //indices of respective dimensions of the world in myDims
+    public static final int WIDTH = Atom.X;
+    public static final int HEIGHT = Atom.Y;
+    public static final int DEPTH = Atom.Z;
 
     private ArrayList<DungeonCharacter> myMobs;
     private Hero myPlayer;
@@ -34,16 +38,23 @@ public final class GameController {
     private DungeonGenerationOptions myOptions;
     /// the game map
     private Room[][][] myMap;
+    private int[] myDims;
 
-    private View myView;
+    private ViewRunner myView;
+    ///messages given to us by the ViewRunner that we havent resolved yet
+    public BlockingQueue<ViewToModelMessage> myVTMQueue;
+    ///messages we're sending to the ViewRunner (they grab a reference to this)
+    public BlockingQueue<ModelToViewMessage> myMTVQueue;
 
     ///actual state that the game controller uses to run the game on a given tick
     private GameState myState;
 
     /// number of ticks the GameController has ran for in this game
     private int myTicks = 0;
-    
 
+    /// if true we will return from loop()
+    private boolean myShouldClose = false;
+    
     private ArrayList<SystemController> mySystemControllers;
     private ArrayList<SystemController> mySystemControllersToInit;
     private HashMap<String, SystemController> mySystemControllersByName;
@@ -55,6 +66,7 @@ public final class GameController {
         myPillars = new ArrayList<>();
         myState = GameState.INITIALIZING;
         myMap = null;
+        myDims = null;
         myOptions = theOptions;
         mySystemControllers = new ArrayList<>();
         mySystemControllersToInit = new ArrayList<>( //TODO: sort this later, for now make sure to order them correctly
@@ -62,11 +74,44 @@ public final class GameController {
                     new InitializerTest(this),
                     new MainMenu(this),
                     new AtomLoader(this),
-                    new DungeonGenerator(this)
+                    new DungeonGenerator(this),
+                    new InOut(this)
                 )
             );
         mySystemControllersByState = new HashMap<>();
         mySystemControllersByName = new HashMap<>();
+        myMTVQueue = new LinkedBlockingQueue<>(){
+            @Override
+            public boolean add(ModelToViewMessage toAdd) {
+                System.out.println("MTVQueue added " + toAdd.toString());
+                return super.add(toAdd);
+            }
+            @Override
+            public ModelToViewMessage poll() {
+                ModelToViewMessage ret = super.poll();
+                if(ret != null) {
+
+                    System.out.println("MTVQueue poll() got " + ret.toString());
+                }
+                return ret;
+            }
+        };
+        myVTMQueue = new LinkedBlockingQueue<>() {
+            @Override
+            public boolean add(ViewToModelMessage toAdd) {
+                System.out.println("VTMQueue added " + toAdd.toString());
+                return super.add(toAdd);
+            }
+            @Override
+            public ViewToModelMessage poll() {
+                ViewToModelMessage ret = super.poll();
+                if(ret != null) {
+
+                    System.out.println("VTMQueue poll() got " + ret.toString());
+                }
+                return ret;
+            }
+        };
 
         for(SystemController system : mySystemControllersToInit) {
             GameState state = system.getInitState();
@@ -175,6 +220,9 @@ public final class GameController {
     }
 
     private boolean gameIsDone() {
+        if(myShouldClose) {
+            return true;
+        }
         if(getState() != GameState.HAPPENING) {
             System.out.println("game is in state: " + getState());
             return false;
@@ -188,7 +236,7 @@ public final class GameController {
                 }
             }
         }
-        System.out.println("num pillars: " + myPillars.size() + " num collected pillars: " + numCollectedPillars);
+        //System.out.println("num pillars: " + myPillars.size() + " num collected pillars: " + numCollectedPillars);
         return numCollectedPillars == myPillars.size();
     }
 
@@ -202,6 +250,15 @@ public final class GameController {
 
     public void setMap(final Room[][][] theMap) {
         myMap = theMap;
+        myDims = new int[3];
+        //depth height width
+        myDims[DEPTH] = myMap.length;
+        myDims[HEIGHT] = myMap[0].length;
+        myDims[WIDTH] = myMap[0][0].length;
+    }
+
+    public int[] getDims() {
+        return myDims.clone();
     }
 
     public DungeonGenerationOptions getOptions() {
@@ -219,11 +276,10 @@ public final class GameController {
     public void addPillar(final Pillar thePillar) {
         myPillars.add(thePillar);
     }
-
-    public void setView(final View theView) {
+    public void setView(final ViewRunner theView) {
         myView = theView;
     }
-    public View getView() {
+    public ViewRunner getView() {
         return myView;
     }
 
@@ -240,4 +296,13 @@ public final class GameController {
     public HeroStartPoint getHeroStartPoint() {
         return myHeroStartPoint;
     }
+
+    public boolean getShouldClose() {
+        return myShouldClose;
+    }
+
+    public void setShouldClose(final boolean myShouldClose) {
+        this.myShouldClose = myShouldClose;
+    }
+
 }

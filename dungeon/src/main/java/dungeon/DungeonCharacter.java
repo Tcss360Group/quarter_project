@@ -1,5 +1,7 @@
 package dungeon;
 
+import java.util.ArrayList;
+
 public abstract class DungeonCharacter extends Movable {
 
     private static final double VISION_POWER = VisionPower.NONE.power();
@@ -23,6 +25,50 @@ public abstract class DungeonCharacter extends Movable {
         this.attackSpeed = attackSpeed;
         this.hitChance = hitChance;
         myVisionPower = VISION_POWER;
+        setSprite(new GameSprite("door-S.png", 0., 0., 10.0));
+    }
+
+    @Override
+    public void clickOn(final Atom clicked) {
+        Atom clickedOuter = clicked.getOuterLoc();
+        Atom playerOuter = getOuterLoc();
+
+        //if(!physicalAccess(clicked, 1)) {
+        //    return;
+        //}
+        
+        super.clickOn(clicked);
+
+        if(distance(clickedOuter, playerOuter) == 0) {
+            if(this == clicked) {
+                System.out.println("That's you");
+            }
+            else if(clicked instanceof DungeonCharacter dg) {
+                System.out.println("That's a " + dg.getName() + ", combat isnt implemented so they just stare daggers at you (those daggers do no damage).");
+            } else if(clicked instanceof Pickupable && clicked instanceof Movable mov) {
+                System.out.println("You pick up the " + clicked.getName() + ".");
+                mov.move(this);
+            }
+        } else {
+            if(clicked instanceof Room room && playerOuter instanceof Room ourRoom) {
+                ArrayList<Atom> roomContents = ourRoom.getContents();
+                Door portal = null;
+                for(Atom content : roomContents) {
+                    if(content instanceof Door door) {
+                        if(door.getDest() == room) {
+                            portal = door;
+                            break; 
+                        }
+                    } 
+                }
+                if(portal == null) {
+                    System.out.println("You can't get there because there's no door!");
+                    return;
+                }
+
+                move(room);
+            }
+        }
     }
 
     /// Called every tick to make this DC perform an action

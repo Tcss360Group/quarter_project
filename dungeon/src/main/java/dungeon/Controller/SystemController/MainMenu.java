@@ -1,12 +1,12 @@
 package dungeon.Controller.SystemController;
 
-import dungeon.Hero;
-import dungeon.Priestess;
-import dungeon.Thief;
-import dungeon.View;
-import dungeon.Warrior;
 import dungeon.Controller.GameController;
 import dungeon.Controller.GameState;
+import dungeon.Messages.MTV.ChangeState;
+import dungeon.Messages.VTM.ClassSelected;
+import dungeon.Messages.VTM.ViewToModelMessage;
+import dungeon.View.ViewRunner;
+import dungeon.View.ViewState;
 
 /**
  * meant for handling user interaction with the main menu. currently a stub.
@@ -42,18 +42,42 @@ public class MainMenu extends SystemController {
     public void fire(final boolean resumed) {
         GameController controller = getController();
         if(myHasStarted == false) {
-            View myView = new View();
-            controller.setView(myView);
-            myHasStarted = true;
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        // TODO Auto-generated method stub
+                        ViewRunner myView = new ViewRunner(controller);
+                        getController().setView(myView);
+                    }
+                });
+                myHasStarted = true;
+
+            } catch(Exception e) {
+                System.out.println("unable to start the View! " + e.getStackTrace());
+                System.exit(1);
+            }
         } else {
-            View view = controller.getView();
-            if(view == null) { //error?
+            BlockingQueue<ViewToModelMessage> queue = controller.myVTMQueue;
+            ClassSelected classMessage = null;
+            while(!queue.isEmpty()) {
+                ViewToModelMessage message = queue.poll();
+                if(message instanceof ClassSelected msg) {
+                    classMessage = msg;
+                    break;
+                } else {
+                    System.out.println("unhandled input msg " + message.toString());
+                }
+            }
+            if(classMessage == null) {
                 return;
             }
-            if(view.getHero().equals("")) {
+            String heroSelection = classMessage.myClass;
+            if(heroSelection.equals("")) {
                 return;
             }
-            switch (view.getHero()) {
+            switch (heroSelection) {
                 case "Warrior":
                     break;
                 case "Thief":
@@ -63,7 +87,8 @@ public class MainMenu extends SystemController {
                 default:
                     return; // invalid response
             }
-            setHeroSelection(view.getHero());
+            setHeroSelection(heroSelection);
+            controller.myMTVQueue.add(new ChangeState(ViewState.GAME)); //get the view to start displaying the game
             myHasStarted = false;
             myIsDone = true;
             setCanFire(false);

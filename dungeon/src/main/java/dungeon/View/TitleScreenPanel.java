@@ -1,4 +1,4 @@
-package dungeon;
+package dungeon.View;
 
 import java.awt.Color;
 import java.awt.Component;

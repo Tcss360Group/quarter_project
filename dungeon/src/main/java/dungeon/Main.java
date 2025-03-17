@@ -16,15 +16,15 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         try {
-            testBasicWorldGen(4, 4); 
+            testBasicWorldGen(12, 4); 
         } catch (Exception e) {
-            throw e;
+            e.printStackTrace();
         }
     }
 
     public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) throws Exception {
 
-        int size = (int)Math.sqrt(theRoomsPerFloor) * 2;
+        int size = theRoomsPerFloor;
         DungeonGenerationOptions options = new DungeonGenerationOptions(
                 theRoomsPerFloor,
                 theNumFloors,

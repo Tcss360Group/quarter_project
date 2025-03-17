@@ -1,9 +1,8 @@
 package dungeon;
 
-import java.util.ArrayList;
 import dungeon.Controller.GameController;
 
-public class Pillar extends Physical {
+public class Pillar extends Physical implements Pickupable {
     private static String DESCRIPTION = "A mysterious ancient pillar";
     /// the stairs that lead from our spawning room to the floor below us, if any exists
     private Stairs myHereToBelow;

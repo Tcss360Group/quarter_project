@@ -1,6 +1,7 @@
 package dungeon.Controller.SystemController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import dungeon.Atom;
@@ -145,8 +146,7 @@ public final class DungeonGenerator extends SystemController {
     private ArrayList<DungeonGenerationFloor> generate(final DungeonGenerationOptions theOptions) {
         int numFloors = theOptions.getNumFloors();
         int numPillars = theOptions.getNumPillars();
-        //starting out at 4 rooms per floor
-        int numRooms = 4;//myOptions.getNumRooms();
+        int numRooms = theOptions.getNumRooms();
 
         ArrayList<DungeonGenerationFloor> ret = new ArrayList<>();
         int pillarsDelta = numFloors / numPillars;
@@ -230,7 +230,7 @@ public final class DungeonGenerator extends SystemController {
         int x = Math.round(theWidth / 2);
         int y = Math.round(theHeight / 2);
         //we're descending into the dungeon, so later floors are lower.
-        int z = theOptions.getNumFloors() - theFloorsAbove.size();
+        int z = theOptions.getNumFloors() - theFloorsAbove.size() - 1;
 
         DungeonGenerationFloor theFloorAbove = null;
         if (!theFloorsAbove.isEmpty()) {
@@ -379,6 +379,70 @@ public final class DungeonGenerator extends SystemController {
             }
             border = newBorder;
         }
+
+        //add more doors
+        for(y = 0; y < theHeight - 1; y++) {
+            for(x = 0; x < theWidth - 1; x++) {
+                Room room = floor.myMap[y][x];
+                if(room == null) {
+                    continue;
+                }
+
+                ArrayList<Dir> dirs = new ArrayList<>(Arrays.asList(Dir.N, Dir.E, Dir.W, Dir.S));
+                for(Atom content : room.getContents()) {
+                    if(content instanceof Door door && door.getDest().getOuterLoc().getCoords()[Atom.Z] == room.getCoords()[Atom.Z]) {
+                        Room dest = (Room)door.getDest().getOuterLoc();
+                        int dx = x - dest.getCoords()[Atom.X];
+                        int dy = y - dest.getCoords()[Atom.Y];
+
+                        if(dx > 0) {
+                            dirs.remove(Dir.E);
+                        } else if(dx < 0) {
+                            dirs.remove(Dir.W);
+                        } else {
+                            if(dy > 0) {
+                                dirs.remove(Dir.S);
+                            } else {
+                                dirs.remove(Dir.N);
+                            }
+                        }
+                    }
+                }
+
+
+                for(Dir dir : dirs) {
+                    int dx = x;
+                    int dy = y;
+
+                    switch(dir) {
+                        case Dir.N -> {
+                            dy--;
+                            break;
+                        }
+                        case Dir.E -> {
+                            dx++;
+                        }
+                        case Dir.S -> {
+                            dy++;
+                        }
+                        case Dir.W -> {
+                            dx--;
+                        }
+                    }
+
+                    Room select = floor.myMap[dy][dx];
+                    if(select != null) {
+                        Door usToThem = (Door)addAtom(floor, new Door(room, select));
+                        Door themToUs = (Door)addAtom(floor, new Door(select, room));
+                        usToThem.unlock();
+                        themToUs.unlock();
+                    }
+
+                }
+
+            }
+        }
+
         return floor;
 
     }

@@ -4,6 +4,7 @@ public enum SystemControllerName {
     MainMenu("Main Menu"),
     InitializerTest("Initializer Test"),
     AtomLoader("Atom Loader"),
+    InOut("InOut"),
     DungeonGenerator("Dungeon Generator");
 
     private final String myName;

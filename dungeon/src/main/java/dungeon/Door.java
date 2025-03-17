@@ -10,7 +10,7 @@ public class Door extends Movable {
     private static final GameSprite DOOR_DEFAULT_SPRITE = new GameSprite("door_default.png", 0.0f, 0.0f, 0.0f);
     
     // The room this door leads to
-    private Room myDest;
+    private Atom myDest;
 
     private boolean myIsOpen;
     
@@ -19,13 +19,13 @@ public class Door extends Movable {
      * 
      * @param to The room this door connects to.
      */
-    public Door(final Atom theLocation, final String theName, final Room theDest) {
+    public Door(final Atom theLocation, final String theName, final Atom theDest) {
         super(theLocation, theName);
         this.myDest = theDest;
         this.myIsOpen = false;
     }
 
-    public Door(final Atom theLocation, final Room theDest) {
+    public Door(final Atom theLocation, final Atom theDest) {
         this(theLocation, DEFAULT_NAME, theDest);
     }
 
@@ -48,6 +48,13 @@ public class Door extends Movable {
     public boolean getOpen() {
         // Placeholder 
         return myIsOpen;
+    }
+
+    public Atom getDest() {
+        return myDest;
+    }
+    public void setDest(final Atom theDest) {
+        myDest = theDest;
     }
 
     protected boolean uncross(final Movable theMov, final Atom theDest) {

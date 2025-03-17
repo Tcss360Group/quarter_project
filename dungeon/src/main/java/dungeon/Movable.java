@@ -24,6 +24,7 @@ public abstract class Movable extends Atom {
         myInvisiblePower = theInvisiblePower;
     }
 
+    @Override
     public Atom getLoc() {
         return myLoc;
     }
@@ -40,7 +41,6 @@ public abstract class Movable extends Atom {
         }
     }
 
-
     public double getInivisiblePower() {
         return myInvisiblePower;
     }
@@ -50,6 +50,7 @@ public abstract class Movable extends Atom {
     }
 
     ///get the outermost atom containing us and anything containing us and anything containing that...
+    @Override
     public Atom getOuterLoc() {
         Atom ret = getLoc();
         while(ret instanceof Movable retM) {
@@ -57,8 +58,14 @@ public abstract class Movable extends Atom {
         }
         return ret;
     }
+
+    @Override
+    public Atom stepOut() {
+        return getLoc();
+    }
     
     ///get all atoms that contain us and what contains us and what contains that and so on
+    @Override
     public ArrayList<Atom> getRecursiveLocs() {
         ArrayList<Atom> retList = new ArrayList<>();
         Atom loc = getLoc();
@@ -74,6 +81,13 @@ public abstract class Movable extends Atom {
         return retList;
     }
 
+
+    @Override
+    public ArrayList<Atom> getAtomsInView(final int theXRadius, final int theYRadius) {
+        Atom outermostLoc = getOuterLoc();
+        return super.getAtomsInView(outermostLoc.getCoords(), theXRadius, theYRadius);
+    }
+    
     ///move from our loc to theDest if possible
     public void move(final Atom theDest) {
         if(myLoc != null && !myLoc.canExit(this, theDest)) {

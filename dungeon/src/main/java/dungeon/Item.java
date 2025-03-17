@@ -3,7 +3,7 @@ package dungeon;
 /**
  * Represents an item that can exist in the dungeon.
  */
-public abstract class Item extends DungeonObject {
+public abstract class Item extends DungeonObject implements Pickupable {
 
     private String myType;
 
