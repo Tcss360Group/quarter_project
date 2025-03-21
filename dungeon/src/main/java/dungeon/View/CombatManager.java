@@ -1,9 +1,10 @@
-package dungeon;
+package dungeon.View;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -15,6 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import dungeon.Atom;
+import dungeon.DungeonCharacter;
+import dungeon.HealthPotion;
+import dungeon.Hero;
 
 public class CombatManager {
     private static final Random rand = new Random();
@@ -60,7 +66,17 @@ public class CombatManager {
 
         attackButton.addActionListener(e -> {
             double heroAttackDamage = hero.attack();
-            battleMessage.append(hero.getName() + " attacks and deals " + heroAttackDamage + " damage to " + monster.getName() + "\n");
+            String msg = hero.getName() + " attacks and deals " + Math.round(heroAttackDamage) + " damage to " + monster.getName();
+            int numSwords = 0;
+            if(hero instanceof Hero hro) {
+                numSwords = hro.getNumSwords();
+            }
+            String numSwordsStr = "";
+            if(numSwords > 0) {
+                numSwordsStr = " with their " + numSwords + " swords!";
+            }
+            String finMsg = msg + numSwordsStr + "\n";
+            battleMessage.append(finMsg);
 
             monster.setHealth(monster.getHealth() - heroAttackDamage);
             updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
@@ -76,8 +92,12 @@ public class CombatManager {
         specialButton.addActionListener(e -> {
             battleMessage.append(hero.getName() + " uses special skill!\n");
             if(hero instanceof Hero hro) {
-                hro.useSpecialSkill();
+                ArrayList<String> messages = hro.useSpecialSkill(monster);
+                for(String str : messages) {
+                    battleMessage.append(str + "\n");
+                }
             }
+            updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());
             updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
 
             if (monster.getHealth() <= 0) {

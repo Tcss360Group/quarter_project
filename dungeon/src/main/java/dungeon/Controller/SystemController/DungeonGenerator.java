@@ -20,6 +20,7 @@ import dungeon.Priestess;
 import dungeon.Room;
 import dungeon.Skeleton;
 import dungeon.Stairs;
+import dungeon.Sword;
 import dungeon.Thief;
 import dungeon.Warrior;
 
@@ -356,6 +357,10 @@ public final class DungeonGenerator extends SystemController {
                     int healthRoll = theRNG.nextInt(1,100);
                     if(healthRoll < theOptions.getHealthPotionGenerationChance()) {
                         addAtom(floor, new HealthPotion(room, theRNG, 50, 130));
+                    }
+                    int swordRoll = theRNG.nextInt(1,100); 
+                    if(swordRoll < theOptions.getSwordGenerationChance()) {
+                        addAtom(floor, new Sword(room, theRNG.nextDouble(20.0, 40.0)));
                     }
                 }
 
