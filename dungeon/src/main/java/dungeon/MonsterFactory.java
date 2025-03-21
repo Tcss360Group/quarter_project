@@ -16,6 +16,9 @@ public class MonsterFactory {
             case "gremlin" -> {
                 return new Gremlin(theLoc);
             }
+            case "dragon" -> {
+                return new Dragon(theLoc);
+            }
             default -> throw new IllegalArgumentException("Unknown monster type: " + type);
         }
     }

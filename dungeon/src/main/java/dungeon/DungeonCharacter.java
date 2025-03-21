@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import dungeon.View.CombatManager;
+
 public abstract class DungeonCharacter extends Movable {
 
     private static final double VISION_POWER = VisionPower.NONE.power();

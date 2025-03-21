@@ -327,10 +327,14 @@ public final class DungeonGenerator extends SystemController {
 
                 if (roomsCreated >= theNumRooms) {
                     floor.myBossRoom = borderRoom;
+                    String bossName = "ogre";
+                    if(z <= 0) {
+                        bossName = "dragon";
+                    }
                     if (thePlacePillar) {
                         addPillar(floor, new Pillar(borderRoom, thePillarName));
                         //TODO: figure out how to track what kinds of bosses have already been used
-                        addMob(floor, MonsterFactory.createMonster("ogre", borderRoom));
+                        addMob(floor, MonsterFactory.createMonster(bossName, borderRoom));
                     }
                 }
                 
