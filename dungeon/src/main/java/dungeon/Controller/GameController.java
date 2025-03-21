@@ -14,6 +14,7 @@ import dungeon.Controller.SystemController.InitializerTest;
 import dungeon.Controller.SystemController.MainMenu;
 import dungeon.Controller.SystemController.SystemController;
 import dungeon.Controller.SystemController.SystemControllerName;
+import dungeon.Messages.MTV.AddMessage;
 import dungeon.Messages.MTV.ModelToViewMessage;
 import dungeon.Messages.VTM.ViewToModelMessage;
 import dungeon.View.ViewRunner;
@@ -238,7 +239,6 @@ public final class GameController {
             return true;
         }
         if(getState() != GameState.HAPPENING) {
-            System.out.println("game is in state: " + getState());
             return false;
         }
         int numCollectedPillars = 0;
@@ -310,6 +310,10 @@ public final class GameController {
 
     public void setShouldClose(final boolean myShouldClose) {
         this.myShouldClose = myShouldClose;
+    }
+
+    public void pushMessage(final String theMessage) {
+        myMTVQueue.add(new AddMessage(theMessage));
     }
 
 }

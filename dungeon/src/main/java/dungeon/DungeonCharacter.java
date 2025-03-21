@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import dungeon.Controller.GameController;
 import dungeon.View.CombatManager;
 
 public abstract class DungeonCharacter extends Movable {
@@ -42,6 +43,8 @@ public abstract class DungeonCharacter extends Movable {
         Atom clickedOuter = clicked.getOuterLoc();
         Atom playerOuter = getOuterLoc();
 
+        GameController controller = Main.getController();
+
         if(!physicalAccess(clicked, 1)) {
             return;
         }
@@ -50,12 +53,13 @@ public abstract class DungeonCharacter extends Movable {
 
         if(distance(clickedOuter, playerOuter) == 0) {
             if(this == clicked) {
-                System.out.println("That's you");
+                controller.pushMessage("That's you");
+                
             }
             else if(clicked instanceof DungeonCharacter dg) {
-                System.out.println("That's a " + dg.getName() + ", combat isnt implemented so they just stare daggers at you (those daggers do no damage).");
+                controller.pushMessage("That's a " + dg.getName() + ", combat isnt implemented so they just stare daggers at you (those daggers do no damage).");
             } else if(clicked instanceof Pickupable && clicked instanceof Movable mov) {
-                System.out.println("You pick up the " + clicked.getName() + ".");
+                controller.pushMessage("You pick up the " + clicked.getName() + ".");
                 mov.move(this);
             } else if(clicked instanceof Door door) {
                 tryMoveTo((Room)door.getDest());
@@ -87,11 +91,11 @@ public abstract class DungeonCharacter extends Movable {
                     if(dg.getHealth() <= 0) {
                         return;
                     }
-                    System.out.println("You enter the same room as the " + dg.getName() + ", prepare to fight!");
+                    controller.pushMessage("You enter the same room as the " + dg.getName() + ", prepare to fight!");
                     final DungeonCharacter target = dg;
                     try {
                      
-                        SwingUtilities.invokeAndWait(() -> {
+                        SwingUtilities.invokeLater(() -> {
                             JFrame parentFrame = new JFrame("Game");
                             parentFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                             parentFrame.setSize(800, 600);
@@ -126,7 +130,7 @@ public abstract class DungeonCharacter extends Movable {
             } 
         }
         if(portal == null) {
-            System.out.println("You can't get there because there's no door!");
+            Main.getController().pushMessage("You can't get there because there's no door!");
             return;
         }
 

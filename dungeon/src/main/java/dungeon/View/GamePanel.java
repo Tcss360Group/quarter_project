@@ -119,7 +119,7 @@ public class GamePanel extends Canvas implements Runnable {
                                 outputQueue.add(new ClickedOn(view));
                             }
                             g.setColor(Color.BLACK);
-                            g.drawString(view.getName() + " id: " + view.getID() + " point: " + posToUse.toString() , 10, getHeight() - 50);
+                            g.drawString(view.getName(), 10, getHeight() - 50);
                         }
                     }
                 } 

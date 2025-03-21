@@ -48,13 +48,13 @@ public class Pillar extends Physical implements Pickupable {
 
     public void onPickedUp() {
         Hero loc = (Hero) getLoc();
-        System.out.println("you have picked up the pillar of " + getName() + "!");
+        Main.getController().pushMessage("You have picked up the pillar of " + getName() + "!");
         myHereToBelow.unlock();
         myBelowToHere.unlock();
     }
     
     public void onDropped() {
-        System.out.println("you have dropped the pillar of " + getName() + "!");
+        Main.getController().pushMessage("you have dropped the pillar of " + getName() + "!");
         myHereToBelow.lock();
         myBelowToHere.lock();
     }

@@ -37,19 +37,4 @@ public abstract class DungeonObject extends Movable {
         this.myType = theType;
     }
 
-    /**
-     * Overrides the movement reaction.
-     */
-    @Override
-    protected void hasMoved(final Atom theOldLoc) {
-        System.out.println(getName() + " moved from " + theOldLoc + " to " + getLoc());
-    }
-
-    /**
-     * Reacts to bumping into something.
-     */
-    @Override
-    protected void bump(final Atom theDest, final Atom theObstacle) {
-        System.out.println(getName() + " bumped into " + theObstacle);
-    }
 }

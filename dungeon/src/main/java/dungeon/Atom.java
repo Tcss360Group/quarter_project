@@ -119,7 +119,7 @@ public abstract class Atom {
      * called when we are clicked on by (presumably) the player
      */
     public void onClicked(final Atom clickedBy) {
-        System.out.println(myName + " was clicked on by " + clickedBy.toString() + " at: " + Arrays.toString(getOuterLoc().getCoords()));
+        //Main.getController().pushMessage(myName + " was clicked on by " + clickedBy.toString() + " at: " + Arrays.toString(getOuterLoc().getCoords()));
     }
 
     /**
@@ -234,14 +234,11 @@ public abstract class Atom {
      */
     protected boolean canExit(final Movable theMov, final Atom theDest) {
         final ArrayList<Atom> contents = getContents();
-        //System.out.println(myName + " canExit: " + contents.toString());
         for(Atom content : contents) {
             if(content != theMov && !content.uncross(theMov, theDest)) {
-                //System.out.println(myName + " canExit returned false on: " + content.toString());
                 return false;
             }
         }
-        //System.out.println(myName + " canExit returned true for " + theMov.getName());
         return true;
     }
 
