@@ -23,6 +23,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 
 public class GamePanel extends Canvas implements Runnable {
+    public static final long FRAMERATE_TARGET_MILLISECONDS = 16;
     private volatile boolean running = true; 
     private volatile boolean myMouseIsOver = false;
     private volatile Point myMousePos = null;
@@ -107,7 +108,7 @@ public class GamePanel extends Canvas implements Runnable {
                                     outputQueue.add(new ClickedOn(view));
                                 }
                                 g.setColor(Color.BLACK);
-                                g.drawString(view.getName() + " id: " + view.getID() + " point: " + posToUse.toString() , 10, getHeight() / 2);
+                                g.drawString(view.getName() + " id: " + view.getID() + " point: " + posToUse.toString() , 10, getHeight() - 20);
                                 break;
                             }
                         }
@@ -124,7 +125,7 @@ public class GamePanel extends Canvas implements Runnable {
     private void sleepForABit(long startTime) {
 
         long elapsedTime = System.nanoTime() - startTime;
-        long sleepTime = Math.max(5, 16 - elapsedTime / 1_000_000);
+        long sleepTime = Math.max(5, FRAMERATE_TARGET_MILLISECONDS - elapsedTime / 1_000_000);
         try {
             Thread.sleep(sleepTime); 
         } catch (InterruptedException e) {
