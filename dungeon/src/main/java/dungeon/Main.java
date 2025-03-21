@@ -21,7 +21,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         try {
-            testBasicWorldGen(12, 4); 
+            testBasicWorldGen(40, 4); 
         } catch (Exception e) {
             e.printStackTrace();
         }

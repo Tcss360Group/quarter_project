@@ -18,6 +18,9 @@ public abstract class DungeonCharacter extends Movable {
     /// any other movable in the room with a vision power lower than this can be seen by 
     private double myVisionPower;
 
+    ///whether or not we have been killed and updated our appearance to appear so.
+    private boolean myHasDied;
+
     public DungeonCharacter(final Atom theLoc, final String theName, final double health, final double damage,
             final double range, final int attackSpeed, final double hitChance) {
         super(theLoc, theName);
@@ -28,6 +31,7 @@ public abstract class DungeonCharacter extends Movable {
         this.attackSpeed = attackSpeed;
         this.hitChance = hitChance;
         myVisionPower = VISION_POWER;
+        myHasDied = false;
         setSprite(new GameSprite("bad_guy.png", 0., 0., 10.0));
     }
 
@@ -36,9 +40,9 @@ public abstract class DungeonCharacter extends Movable {
         Atom clickedOuter = clicked.getOuterLoc();
         Atom playerOuter = getOuterLoc();
 
-        //if(!physicalAccess(clicked, 1)) {
-        //    return;
-        //}
+        if(!physicalAccess(clicked, 1)) {
+            return;
+        }
         
         super.clickOn(clicked);
 
@@ -51,6 +55,8 @@ public abstract class DungeonCharacter extends Movable {
             } else if(clicked instanceof Pickupable && clicked instanceof Movable mov) {
                 System.out.println("You pick up the " + clicked.getName() + ".");
                 mov.move(this);
+            } else if(clicked instanceof Door door) {
+                tryMoveTo((Room)door.getDest());
             }
         } else {
             if(clicked instanceof Room room && playerOuter instanceof Room) {
@@ -73,24 +79,22 @@ public abstract class DungeonCharacter extends Movable {
                         return;
                     }
                     Room dgRoom = (Room)dgOuter;
-                    if(distance(getOuterLoc(), dgRoom) > 0) {
-                        tryMoveTo(dgRoom);
-                    }
                     if(distance(getOuterLoc(), dgRoom) != 0) {
+                        return;
+                    }
+                    if(dg.getHealth() <= 0) {
                         return;
                     }
                     System.out.println("You enter the same room as the " + dg.getName() + ", prepare to fight!");
                     final DungeonCharacter target = dg;
                     try {
-
+                     
                         SwingUtilities.invokeAndWait(() -> {
                             JFrame parentFrame = new JFrame("Game");
                             parentFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                             parentFrame.setSize(800, 600);
                             parentFrame.setLocationRelativeTo(null);
-
-                            parentFrame.setVisible(true);
-
+                     
                             CombatManager.battle(parentFrame, this, target);
                             parentFrame.dispose();
                         });
@@ -168,4 +172,13 @@ public abstract class DungeonCharacter extends Movable {
     }
 
     public abstract double attack();
+
+    /// we have died, our health has fallen below zero.
+    public void die() {
+        myHasDied = true;
+        GameSprite mSprite = getSprite();
+        mSprite.setRotation(Math.toRadians(90));
+        mSprite.setLayer(mSprite.getLayer() / 2);
+        setSprite(mSprite);
+    }
 }

@@ -177,32 +177,7 @@ public abstract class Atom {
     }
 
     public ArrayList<Atom> getAtomsInView(final int theXRadius, final int theYRadius) {
-        int[] coords = getCoords();
-        GameController controller = Main.getController();
-        int[] dims = controller.getDims();
-        Room[][][] map = controller.getMap();
-
-        int sx = Math.clamp(coords[Atom.X] - theXRadius, 0, dims[GameController.WIDTH] - 1);
-        int sy = Math.clamp(coords[Atom.Y] - theYRadius, 0, dims[GameController.HEIGHT] - 1);
-        int ex = Math.clamp(coords[Atom.X] + theXRadius, 0, dims[GameController.WIDTH] - 1);
-        int ey = Math.clamp(coords[Atom.Y] + theYRadius, 0, dims[GameController.HEIGHT] - 1);
-
-        int z = coords[Atom.Z];
-
-        ArrayList<Atom> ret = new ArrayList<>();
-
-        for(int y = sy; y < ey; y++) {
-            for(int x = sx; x < ex; x++) {
-                Room[][] test = map[z];
-                Room roomAt = map[z][y][x];
-                if(roomAt == null) {
-                    continue;
-                }
-                ret.add(roomAt);
-                ret.addAll(roomAt.getRecursiveContents());
-            }
-        }
-        return ret;
+        return getAtomsInView(getOuterLoc().getCoords(), theXRadius, theYRadius);
     }
 
     public ArrayList<Atom> getAtomsInView(final int[] coords, final int theXRadius, final int theYRadius) {
@@ -226,7 +201,7 @@ public abstract class Atom {
                     continue;
                 }
                 ret.add(roomAt);
-                ret.addAll(roomAt.getRecursiveContents());
+                ret.addAll(roomAt.getContents());
             }
         }
         return ret;

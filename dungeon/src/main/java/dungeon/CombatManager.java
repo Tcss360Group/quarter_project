@@ -67,7 +67,7 @@ public class CombatManager {
 
             if (monster.getHealth() <= 0) {
                 battleMessage.append(monster.getName() + " has been defeated!\n");
-                endBattle(battleDialog, hero);
+                endBattle(battleDialog, hero, monster);
             } else {
                 monsterTurn(hero, monster, battleMessage, heroHealthBar, battleDialog);
             }
@@ -82,7 +82,7 @@ public class CombatManager {
 
             if (monster.getHealth() <= 0) {
                 battleMessage.append(monster.getName() + " has been defeated!\n");
-                endBattle(battleDialog, hero);
+                endBattle(battleDialog, hero, monster);
             } else {
                 monsterTurn(hero, monster, battleMessage, heroHealthBar, battleDialog);
             }
@@ -124,7 +124,7 @@ public class CombatManager {
 
                     monster.setHealth(0);
                     updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
-                    endBattle(battleDialog, hero);
+                    endBattle(battleDialog, hero, monster);
                 }
             }
         });
@@ -159,18 +159,19 @@ public class CombatManager {
 
             if (hero.getHealth() <= 0) {
                 battleMessage.append(hero.getName() + " has been defeated!\n");
-                endBattle(battleDialog, hero);
+                endBattle(battleDialog, hero, monster);
             }
         }
     }
 
-    private static void endBattle(JDialog battleDialog, DungeonCharacter hero) {
+    private static void endBattle(final JDialog battleDialog, final DungeonCharacter hero, final DungeonCharacter theMonster) {
         if (hero.getHealth() <= 0) {
             JOptionPane.showMessageDialog(battleDialog, "Game Over! " + hero.getName() + " has been defeated.", "Game Over", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         } else {
             JOptionPane.showMessageDialog(battleDialog, "The battle is over!");
             battleDialog.dispose();
+            theMonster.die();
         }
     }
 }

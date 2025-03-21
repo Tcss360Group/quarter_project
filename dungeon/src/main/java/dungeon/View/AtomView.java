@@ -8,6 +8,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Optional;
 
 import dungeon.Atom;
 import dungeon.GameSprite;
@@ -24,10 +25,11 @@ public class AtomView implements Shape {
     private int myID;
     private String myName;
     private GameSprite mySprite;
+    private BufferedImage myImage;
+    /// gives us the translation we should have before knowing the resolution of the screen
     private AffineTransform myTransform;
+    /// exactly how we are shown on the screen
     private AffineTransform myScreenSpaceTransform;
-    private int myWidth;
-    private int myHeight;
 
     //private Rectangle2D.Double myRect; //i dont know what size rects should be
 
@@ -42,39 +44,45 @@ public class AtomView implements Shape {
         ox -= sx;
         oy -= sy;
 
-        GameSprite sprite = theAtom.getSprite();
-        BufferedImage theImage = sprite.getImage();
-
-        myWidth = DEFAULT_WIDTH;
-        myHeight = DEFAULT_HEIGHT;
-
-        //ox -= myWidth;
-        //oy -= myHeight;
-
         AffineTransform transform = new AffineTransform();
         transform.translate(ox, oy);
-        //transform.scale(myWidth / theImage.getWidth(), myHeight / theImage.getHeight());
 
         myID = theID;
         myName = theAtom.getName();
         mySprite = theAtom.getSprite();
         myTransform = transform;
+        myImage = mySprite.getImage();
         //will be filled when we're given to the GamePanel
         myScreenSpaceTransform = null;
+        
     }
 
     public void calculateScreenSpaceTransform(final int resX, final int resY) {
         double resXPerWorldWidth = resX / InOut.SCREEN_WIDTH_TILES;
         double resYPerWorldHeight = resY / InOut.SCREEN_HEIGHT_TILES;
+        BufferedImage image = mySprite.getImage();
+        double ourXScale = mySprite.getWidth() * resXPerWorldWidth / image.getWidth();
+        double ourYScale = mySprite.getHeight() * resYPerWorldHeight / image.getHeight();
 
-        double ourXScale = 1 / resXPerWorldWidth;
-        double ourYScale = 1 / resYPerWorldHeight;
 
         myScreenSpaceTransform = new AffineTransform();
-        myScreenSpaceTransform.scale(resXPerWorldWidth, resYPerWorldHeight);
-        myScreenSpaceTransform.concatenate(myTransform);
+
+        //we have to rotate by the center of the image
+        //myScreenSpaceTransform.translate(-ourXScale/2, -ourYScale/2);
+        //myScreenSpaceTransform.translate(ourXScale/2, ourYScale/2);
+
+        double XWidthTranslateFactor = Math.abs(mySprite.getWidth() - 1)/2;
+        double YHeightTranslateFactor = Math.abs(mySprite.getHeight() - 1)/2;
+
+        double translateX = myTransform.getTranslateX() + mySprite.getX() + XWidthTranslateFactor;
+        double translateY = myTransform.getTranslateY() + mySprite.getY() + YHeightTranslateFactor;
+
+        myScreenSpaceTransform.translate(translateX * resXPerWorldWidth, translateY * resYPerWorldHeight);
+        myScreenSpaceTransform.scale(ourXScale, ourYScale);
+        myScreenSpaceTransform.rotate(mySprite.getRotation(), image.getWidth() / 2, image.getHeight() / 2);
+
+        //myScreenSpaceTransform.concatenate(myTransform);
         Point2D screenPoint = myScreenSpaceTransform.transform(new Point2D.Double(0.,0.), null);
-        int asda = 1;
     }
 
     public AffineTransform getScreenSpaceTransform() {
@@ -82,29 +90,10 @@ public class AtomView implements Shape {
     }
 
     public void render(final Graphics2D g) {
-        
-        //BufferedImage image = mySprite.getImage();
-        //int width = image.getWidth();
-        //int height = image.getHeight();
 
-        //for(int y = 0; y < height; y++) {
-        //    for(int x = 0; x < width; x++) {
-        //        int rgb = image.getRGB(x,y);
-        //        int red = (rgb >> 16) & 0xFF;
-        //        int green = (rgb >> 8) & 0xFF;
-        //        int blue = rgb & 0xFF;
-
-        //        // Print the RGB values
-        //        System.out.printf("Pixel (%d, %d): R=%d, G=%d, B=%d\n", x, y, red, green, blue);
-        //    }
-        //}
-
-        //g.setColor(Color.RED);
-        //Point2D point1 = getScreenSpaceTransform().transform(new Point2D.Double(0,0), null);
-        //g.fillRect((int)point1.getX(), (int)point1.getY(), 100, 100);
-        //System.out.println("width: " + image.getWidth() + " height: " + image.getHeight() + " type: " + image.getType());
         Point2D point = getScreenSpaceTransform().transform(new Point2D.Double(0,0), null);
-        g.drawImage(mySprite.getImage(), null, (int)point.getX(), (int)point.getY());
+
+        g.drawImage(mySprite.getImage(), myScreenSpaceTransform, null);
     }
 
     @Override
@@ -124,6 +113,30 @@ public class AtomView implements Shape {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * returns the alpha of the pixel at the specified point in screen space belongs to if and only if said point is actually inside us, and returns Optional.empty() otherwise
+     */
+    public Optional<Integer> getContainingPixelAlpha(double x, double y) {
+
+        Point2D point = new Point2D.Double(x,y);
+        try {
+
+            point = AffineTransform.getTranslateInstance(myScreenSpaceTransform.getTranslateX(), myScreenSpaceTransform.getTranslateY()).inverseTransform(point, null);
+        } catch(Exception e) {
+            int d = 1;
+        }
+
+        int width = mySprite.getImage().getWidth();
+        int height = mySprite.getImage().getHeight();
+        boolean inside = point.getX() >= 0 && point.getX() < mySprite.getImage().getWidth() * myScreenSpaceTransform.getScaleX() && point.getY() >= 0 && point.getY() < mySprite.getImage().getHeight() * myScreenSpaceTransform.getScaleY();
+        if(!inside) {
+            return Optional.empty();
+        }
+        
+        int ret = mySprite.getImage().getRGB((int)(point.getX() / myScreenSpaceTransform.getScaleX()), (int)(point.getY() / myScreenSpaceTransform.getScaleY()));
+        return Optional.of(Integer.valueOf((ret >> 24) & 0xff));
+    }
+
     @Override
     public boolean contains(double x, double y) {
         Point2D point = new Point2D.Double(x,y);
@@ -136,7 +149,8 @@ public class AtomView implements Shape {
 
         int width = mySprite.getImage().getWidth();
         int height = mySprite.getImage().getHeight();
-        return point.getX() >= 0 && point.getX() < mySprite.getImage().getWidth() && point.getY() >= 0 && point.getY() < mySprite.getImage().getHeight();
+        return point.getX() >= 0 && point.getX() < mySprite.getImage().getWidth() * myScreenSpaceTransform.getScaleX() && point.getY() >= 0 && point.getY() < mySprite.getImage().getHeight() * myScreenSpaceTransform.getScaleY();
+        //return mySprite.getImage().getRGB(point.getX(), height)
         //return getBounds().contains(x,y);
 
     }

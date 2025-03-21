@@ -10,7 +10,7 @@ public abstract class Hero extends DungeonCharacter {
         super(theLoc, theName, health * 3, damage,  range, attackSpeed, hitChance);
         this.blockChance = blockChance;
         this.specialSkill = specialSkill;
-        setSprite(new GameSprite("hero.png", 0., 0., 10.0));
+        setSprite(new GameSprite("warrior.jpg", 0., 0., 10.0));
     }
 
     public double getBlockChance() {

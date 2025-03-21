@@ -17,6 +17,7 @@ public class Skeleton extends Monster {
 
     public Skeleton(final Atom theLoc) {
         super(theLoc, SKELETON_NAME, SKELETON_HEALTH, SKELETON_DAMAGE, SKELETON_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
+        setSprite(new GameSprite("skeleton.jpg", 0,0, 10));
     }
 
     @Override

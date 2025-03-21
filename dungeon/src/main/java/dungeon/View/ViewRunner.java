@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import dungeon.Atom;
+import dungeon.DungeonCharacter;
 import dungeon.Main;
 import dungeon.Controller.GameController;
 import dungeon.Messages.MTV.ChangeState;
@@ -83,6 +84,9 @@ public class ViewRunner {
     private long myFrameTime = 16;
     private Timer myTimer = null;
     private Thread myRenderThread = null;
+
+    private DungeonCharacter myHero;
+    private DungeonCharacter myBattleTarget;
 
 
     //this is the EDT i think
@@ -214,7 +218,7 @@ public class ViewRunner {
                 myAtomsInView = newAtoms;
                 toRender.add(new Update((ArrayList<AtomView>)newAtoms.clone()));
                 continue;
-            }
+            } 
         }
         while(!fromRender.isEmpty()) {
             RenderToViewMessage input = fromRender.remove();

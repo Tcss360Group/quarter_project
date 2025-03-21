@@ -17,6 +17,7 @@ public class Gremlin extends Monster {
 
     public Gremlin(final Atom theLoc) {
         super(theLoc, GREMLIN_NAME, GREMLIN_HEALTH, GREMLIN_DAMAGE, GREMLIN_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
+        setSprite(new GameSprite("gremlin.png", 0,0, 10));
     }
 
     @Override

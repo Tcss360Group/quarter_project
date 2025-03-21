@@ -11,7 +11,11 @@ public class Room extends Atom {
     }
     public Room(int[] coordinates, String name) {
         super(coordinates, name);  // Call the Atom constructor with coordinates and roomName
-        setSprite(new GameSprite("room.png", 0, 0, 0));
+        GameSprite newSprite = new GameSprite("temp_room.png", 0, 0, 0);
+        newSprite.setWidth(1.0);
+        newSprite.setHeight(1.0);
+        setSprite(newSprite);
+        
     }
 
 

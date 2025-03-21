@@ -240,7 +240,6 @@ public final class GameController {
             return true;
         }
         if(getState() != GameState.HAPPENING) {
-            System.out.println("game is in state: " + getState());
             return false;
         }
         int numCollectedPillars = 0;

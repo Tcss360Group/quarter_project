@@ -17,6 +17,7 @@ public class Ogre extends Monster {
 
     public Ogre(final Atom theLoc) {
         super(theLoc, OGRE_NAME, OGRE_HEALTH, OGRE_DAMAGE, OGRE_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
+        setSprite(new GameSprite("ogre.png", 0,0, 10));
     }
 
     @Override

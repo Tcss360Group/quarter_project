@@ -125,7 +125,22 @@ public final class DungeonGenerator extends SystemController {
 
         ret.map = new Room[depth][height][width];
         for (int i = 0; i < depth; i++) {
-            DungeonGenerationFloor floor = floors.get(depth - 1 - i); //floors are generated top down, we're placing them bottom up
+            DungeonGenerationFloor floor = floors.get(i); //floors are generated top down, we're placing them bottom up
+
+            if (i < depth - 1) {
+                DungeonGenerationFloor theFloorBelow = floors.get(i + 1);
+                theFloorBelow.myAtoms.add(new Stairs(theFloorBelow.myEntrance, floor.myBossRoom));
+                Stairs stairs = new Stairs(floor.myBossRoom, theFloorBelow.myEntrance);
+                stairs.lock();
+                floor.myAtoms.add(stairs);
+            }
+
+            if (i == 0) {
+                HeroStartPoint startPoint = new HeroStartPoint(floor.myEntrance);
+                floor.myAtoms.add(startPoint);
+                floor.myStartPoint = startPoint;
+            }
+
             ret.characters.addAll(floor.myCharacters);
             ret.atoms.addAll(floor.myAtoms);
             if(floor.myStartPoint != null) {
@@ -133,7 +148,7 @@ public final class DungeonGenerator extends SystemController {
             }
             for (int j = 0; j < height; j++) {
                 for (int k = 0; k < width; k++) {
-                    ret.map[i][j][k] = floor.myMap[j][k];
+                    ret.map[depth - i - 1][j][k] = floor.myMap[j][k];
                 }
             }
 
@@ -168,19 +183,6 @@ public final class DungeonGenerator extends SystemController {
                     rng,
                     theOptions);
 
-            if (i > 0) {
-                DungeonGenerationFloor theFloorAbove = ret.getLast();
-                floor.myAtoms.add(new Stairs(floor.myEntrance, theFloorAbove.myBossRoom));
-                Stairs stairs = new Stairs(theFloorAbove.myBossRoom, floor.myEntrance);
-                stairs.lock();
-                theFloorAbove.myAtoms.add(stairs);
-            }
-
-            if (i == 0) {
-                HeroStartPoint startPoint = new HeroStartPoint(floor.myEntrance);
-                floor.myAtoms.add(startPoint);
-                floor.myStartPoint = startPoint;
-            }
 
             ret.add(floor);
 
@@ -238,7 +240,6 @@ public final class DungeonGenerator extends SystemController {
         }
 
         DungeonGenerationFloor floor = new DungeonGenerationFloor(theWidth, theHeight);
-        theFloorsAbove.add(floor);
 
         if (theFloorAbove != null) {
             int[] coords = theFloorAbove.myBossRoom.getCoords();

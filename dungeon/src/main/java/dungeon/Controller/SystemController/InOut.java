@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import dungeon.Atom;
+import dungeon.DungeonCharacter;
 import dungeon.Controller.GameController;
 import dungeon.Controller.GameState;
 import dungeon.Hero;
@@ -31,7 +32,6 @@ public class InOut extends SystemController {
     private static final boolean CAN_FIRE = true;
     private static final GameState INIT_STATE = GameState.HAPPENING;
 
-    private int[] myPlayerCoords;
     private HashMap<AtomView, Atom> myAtomsByView;
     private ArrayList<AtomView> myCurrentAtomViews;
     private Rectangle myCurrentScreenMap;
@@ -40,7 +40,6 @@ public class InOut extends SystemController {
     public InOut(final GameController controller) {
         super(controller, NAME, INIT_STATE);
         setCanFire(CAN_FIRE);
-        myPlayerCoords = null;
         myAtomsByView = new HashMap<>();
         myCurrentAtomViews = new ArrayList<>();
         myCurrentScreenMap = new Rectangle(0,0,1,1);
