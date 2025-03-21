@@ -12,7 +12,6 @@ import dungeon.Door;
 import dungeon.DungeonCharacter;
 import dungeon.DungeonGenerationOptions;
 import dungeon.Hero;
-import dungeon.HeroStartPoint;
 import dungeon.Ogre;
 import dungeon.Pillar;
 import dungeon.Priestess;
@@ -45,7 +44,6 @@ public final class DungeonGenerator extends SystemController {
         Pillar myPillar;
         ArrayList<DungeonCharacter> myCharacters;
         ArrayList<Atom> myAtoms;
-        HeroStartPoint myStartPoint;
 
         DungeonGenerationFloor(final int theWidth, final int theHeight) {
             myRooms = new ArrayList<>();
@@ -56,7 +54,6 @@ public final class DungeonGenerator extends SystemController {
             myPillar = null;
             myCharacters = new ArrayList<>();
             myAtoms = new ArrayList<>();
-            myStartPoint = null;
         }
 
     }
@@ -75,8 +72,7 @@ public final class DungeonGenerator extends SystemController {
         MainMenu menu = (MainMenu)controller.getSystemController(SystemControllerName.MainMenu);
         String selectedHero = menu.getHeroSelection(); // this sucks man i need to figure something better out
 
-        HeroStartPoint landMark = mapAndAtoms.startPoint;
-        Room startPoint = (Room)landMark.getOuterLoc();
+        Room startPoint = mapAndAtoms.startPoint;
         Hero hero = null;
         switch (selectedHero) {
             case "Warrior":
@@ -105,7 +101,7 @@ public final class DungeonGenerator extends SystemController {
         public Room[][][] map;
         public ArrayList<Atom> atoms;
         public ArrayList<DungeonCharacter> characters;
-        public HeroStartPoint startPoint;
+        public Room startPoint;
 
         public CreateMapRet() {
             map = null;
@@ -136,16 +132,11 @@ public final class DungeonGenerator extends SystemController {
             }
 
             if (i == 0) {
-                HeroStartPoint startPoint = new HeroStartPoint(floor.myEntrance);
-                floor.myAtoms.add(startPoint);
-                floor.myStartPoint = startPoint;
+                ret.startPoint = floor.myEntrance;
             }
 
             ret.characters.addAll(floor.myCharacters);
             ret.atoms.addAll(floor.myAtoms);
-            if(floor.myStartPoint != null) {
-                ret.startPoint = floor.myStartPoint;
-            }
             for (int j = 0; j < height; j++) {
                 for (int k = 0; k < width; k++) {
                     ret.map[depth - i - 1][j][k] = floor.myMap[j][k];
