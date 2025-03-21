@@ -43,5 +43,5 @@ public abstract class Item extends DungeonObject implements Pickupable {
      *
      * @param theUser The entity using the item.
      */
-    public abstract void use(DungeonObject theUser);
+    public abstract void use(final DungeonCharacter theUser);
 }

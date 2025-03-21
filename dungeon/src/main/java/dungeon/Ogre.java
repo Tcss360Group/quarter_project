@@ -6,7 +6,7 @@ public class Ogre extends Monster {
     private static final double OGRE_HEALTH = 200.0;
     private static final double OGRE_DAMAGE = 45.0;  
     private static final double OGRE_RANGE = 1.5;   
-    private static final String OGRE_NAME = "Orge"; 
+    private static final String OGRE_NAME = "Ogre"; 
     private static final int ATTACK_SPEED = 2;
     private static final double HIT_CHANCE = 0.6;
     private static final double CHANCE_TO_HEAL = 0.1;

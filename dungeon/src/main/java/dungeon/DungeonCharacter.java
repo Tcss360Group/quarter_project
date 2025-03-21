@@ -24,8 +24,8 @@ public abstract class DungeonCharacter extends Movable {
     public DungeonCharacter(final Atom theLoc, final String theName, final double health, final double damage,
             final double range, final int attackSpeed, final double hitChance) {
         super(theLoc, theName);
-        this.maxHealth = health;  // Set maxHealth during construction
-        this.health = health;  // Current health
+        this.maxHealth = health;  
+        this.health = health;  
         this.damage = damage;
         this.range = range;
         this.attackSpeed = attackSpeed;
@@ -140,7 +140,10 @@ public abstract class DungeonCharacter extends Movable {
     }
 
     public void setHealth(double health) {
-        this.health = Math.max(0, health);  // Ensure health does not go below 0
+        this.health = Math.min(Math.max(0, health), maxHealth);  // Ensure health does not go below 0
+    }
+    public void addHealth(final double theDelta) {
+        setHealth(health + theDelta);
     }
 
     public double getMaxHealth() {

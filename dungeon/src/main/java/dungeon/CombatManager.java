@@ -90,14 +90,28 @@ public class CombatManager {
 
         // Health Potion Button ActionListener
         healthPotionButton.addActionListener(e -> {
+            HealthPotion potion = null;
+            for(Atom content : hero.getRecursiveContents()) {
+                if(content instanceof HealthPotion pot) {
+                    potion = pot;
+                    break;
+                }
+            }
+            if(potion == null) {
+                battleMessage.append("You don't have any potions!");
+                return;
+            }
             if (hero.getHealth() <= 0) {
                 battleMessage.append("You cannot use a potion. " + hero.getName() + " has been defeated!\n");
                 return;
             }
 
-            double newHealth = Math.min(hero.getHealth() + HEALTH_POTION_HEAL_AMOUNT, hero.getMaxHealth());
-            double healedAmount = newHealth - hero.getHealth();
-            hero.setHealth(newHealth);
+            double oldHealth = hero.getHealth();
+            potion.use(hero);
+            potion = null;
+
+            double newHealth = hero.getHealth();
+            double healedAmount = newHealth - oldHealth;
 
             battleMessage.append(hero.getName() + " used a Health Potion and restored " + (int) healedAmount + " HP!\n");
             updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());

@@ -30,14 +30,13 @@ public class Main {
     public static void testBasicWorldGen(final int theRoomsPerFloor, final int theNumFloors) throws Exception {
 
         int size = theRoomsPerFloor;
-        DungeonGenerationOptions options = new DungeonGenerationOptions(
-                theRoomsPerFloor,
-                theNumFloors,
-                4,
-                10,
-                new String[] { "a", "b", "c", "d" },
-                size,
-                size);
+        DungeonGenerationOptions options = new DungeonGenerationOptions();
+        options.setNumRooms(theRoomsPerFloor);
+        options.setNumFloors(theNumFloors);
+        options.setNumPillars(4);
+        options.setNonBossRoomMonsterChance(30);
+        options.setWidth(size);
+        options.setHeight(size);
         GameController controller = new GameController(options);
         setController(controller);
         controller.init();

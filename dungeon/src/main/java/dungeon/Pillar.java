@@ -4,7 +4,7 @@ import dungeon.Controller.GameController;
 
 public class Pillar extends Physical implements Pickupable {
     private static String DESCRIPTION = "A mysterious ancient pillar";
-    private static GameSprite DEFAULT_SPRITE = new GameSprite("pillar.png", 0.0f,0.0f,20.0f);
+    private static GameSprite DEFAULT_SPRITE = new GameSprite("pillar.png", -0.1f,0.0f, 0.0, 0.25,0.25, 20.0f);
     /// the stairs that lead from our spawning room to the floor below us, if any exists
     private Stairs myHereToBelow;
     /// the stairs that lead from the floor below us to our spawning room, if any exists
