@@ -1,5 +1,8 @@
 package dungeon;
 
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.Random;
 
 public class Dragon extends Monster {
@@ -18,6 +21,33 @@ public class Dragon extends Monster {
     public Dragon(final Atom theLoc) {
         super(theLoc, NAME, HEALTH, DAMAGE, RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
         setSprite(new GameSprite("dragon.png", 0,0, 0,0.8,0.8,10));
+        fetchStatsFromDatabase();
+    }
+
+
+    private void fetchStatsFromDatabase() {
+        String sql = "SELECT * FROM Characters WHERE name = 'Skeleton'";
+        try (Connection conn = DatabaseConnection.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                setName(rs.getString("name"));
+                setHealth(rs.getDouble("health"));
+                setDamage(rs.getDouble("damage"));
+                setRange(rs.getDouble("range"));
+                setSpeed(rs.getInt("attack_speed"));
+                sethitChance(rs.getDouble("hit_chance"));
+                sethealChance(rs.getDouble("heal_chance"));
+                setMinHeal(rs.getInt("min_heal"));
+                setMaxHeal(rs.getInt("max_heal"));
+                setMinDamage(rs.getInt("min_damage"));
+                setMaxDamage(rs.getInt("max_damage"));
+            }
+        } catch (Exception e) {
+            System.out.println("Error fetching Skeleton stats from database: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override

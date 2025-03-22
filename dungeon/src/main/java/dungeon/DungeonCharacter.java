@@ -23,6 +23,8 @@ public abstract class DungeonCharacter extends Movable{
 
     ///whether or not we have been killed and updated our appearance to appear so.
     private boolean myHasDied;
+    private int minDamage;
+    private int maxDamage;
 
     public DungeonCharacter(final Atom theLoc, final String theName, final double health, final double damage,
             final double range, final int attackSpeed, final double hitChance) {
@@ -181,6 +183,29 @@ public abstract class DungeonCharacter extends Movable{
 
     public void setVisible(final double theVisionPower) {
         myVisionPower = theVisionPower;
+    }
+
+    public void setRange(final double theRange) {
+        range = theRange;
+    }
+    public void setSpeed(final int theSpeed) {
+        attackSpeed = theSpeed;
+    }
+    public void sethitChance(final double theNew) {
+        hitChance = theNew;
+    }
+
+    public void setMinDamage(final int theNew) {
+        minDamage = theNew;
+    }
+    public void setMaxDamage(final int theNew) {
+        maxDamage = theNew;
+    }
+    public int getMaxDamage() {
+        return maxDamage;
+    }
+    public int getMinDamage() {
+        return minDamage;
     }
 
     public abstract double attack();

@@ -131,7 +131,7 @@ public final class ViewRunner  implements Serializable{
 
             @Override
             public void keyReleased(KeyEvent e) {
- }
+            }
         });
 
         myToGamePanelQueue = new LinkedBlockingQueue<>() {

@@ -3,9 +3,9 @@ package dungeon;
 import java.util.Random;
 
 public abstract class Monster extends DungeonCharacter {
-    private final double chanceToHeal;
-    private final int minHealPoints;
-    private final int maxHealPoints;
+    private  double chanceToHeal;
+    private  int minHealPoints;
+    private  int maxHealPoints;
 
     public Monster(final Atom theLoc, final String theName, final double health, final double damage, final double range, final int attackSpeed, final double hitChance, 
                    final double chanceToHeal, final int minHealPoints, final int maxHealPoints) {
@@ -27,6 +27,18 @@ public abstract class Monster extends DungeonCharacter {
         return maxHealPoints;
     }
 
+    public void sethealChance(final double theNew) {
+        chanceToHeal = theNew;
+    }
+    public void setMinHeal(final int theNew) {
+        minHealPoints = theNew;
+    }
+
+    public void setMaxHeal(final int theNew) {
+        maxHealPoints = theNew;
+    }
+
+    
     public void heal() {
         if (new Random().nextDouble() < chanceToHeal) {
             int healAmount = new Random().nextInt(maxHealPoints - minHealPoints + 1) + minHealPoints;

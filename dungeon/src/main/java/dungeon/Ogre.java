@@ -17,6 +17,7 @@ public class Ogre extends Monster {
 
     public Ogre(final Atom theLoc) {
         super(theLoc, "Ogre", 0, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
+        setSprite(new GameSprite("ogre.png", 0,0, 10));
         fetchStatsFromDatabase(); // Load stats dynamically from the database
     }
 
@@ -30,14 +31,14 @@ public class Ogre extends Monster {
                 setName(rs.getString("name"));
                 setHealth(rs.getDouble("health"));
                 setDamage(rs.getDouble("damage"));
-                this.range = rs.getDouble("range");
-                this.attackSpeed = rs.getInt("attack_speed");
-                this.hitChance = rs.getDouble("hit_chance");
-                this.healChance = rs.getDouble("heal_chance");
-                this.minHeal = rs.getInt("min_heal");
-                this.maxHeal = rs.getInt("max_heal");
-                this.minDamage = rs.getInt("min_damage");
-                this.maxDamage = rs.getInt("max_damage");
+                setRange(rs.getDouble("range"));
+                setSpeed(rs.getInt("attack_speed"));
+                sethitChance(rs.getDouble("hit_chance"));
+                sethealChance(rs.getDouble("heal_chance"));
+                setMinHeal(rs.getInt("min_heal"));
+                setMaxHeal(rs.getInt("max_heal"));
+                setMinDamage(rs.getInt("min_damage"));
+                setMaxDamage(rs.getInt("max_damage"));
             }
         } catch (Exception e) {
             System.out.println("Error fetching Ogre stats from database: " + e.getMessage());

@@ -19,14 +19,14 @@ public class Main implements Serializable {
 
     public static void SerializedtheWorld (String FilePath){
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FilePath))) {
-           oos.writeObject(controller);
+            oos.writeObject(controller);
             System.out.println("All objects serialized!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public static void deSerializetheWorld(String FilePath){
-              try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FilePath))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FilePath))) {
             GameController deserializedObject = (GameController) ois.readObject();
 
             // Replace the original reference with the deserialized object

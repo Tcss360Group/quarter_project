@@ -51,6 +51,22 @@ public class GameInitializer implements Serializable{
          30,        
          50         
        );
+
+        //dragon stats
+        CharacterDAO.insertCharacter(
+         "Dragon",
+         2000,       
+         60.0,       
+         1.5,       
+         2,        
+         0.8,        
+          0.3,          
+          30,         
+          60,         
+          50,         
+         80           
+        );
+       
         System.out.println("Characters have been added to the database.");
     }
     
