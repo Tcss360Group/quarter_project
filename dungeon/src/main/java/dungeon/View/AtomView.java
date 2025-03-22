@@ -28,7 +28,7 @@ public class AtomView implements Shape, Serializable {
     private int myID;
     private String myName;
     private GameSprite mySprite;
-    private BufferedImage myImage;
+    //private transient BufferedImage myImage;
     /// gives us the translation we should have before knowing the resolution of the screen
     private AffineTransform myTransform;
     /// exactly how we are shown on the screen
@@ -54,7 +54,7 @@ public class AtomView implements Shape, Serializable {
         myName = theAtom.getName();
         mySprite = theAtom.getSprite();
         myTransform = transform;
-        myImage = mySprite.getImage();
+        //myImage = mySprite.getImage();
         //will be filled when we're given to the GamePanel
         myScreenSpaceTransform = null;
         

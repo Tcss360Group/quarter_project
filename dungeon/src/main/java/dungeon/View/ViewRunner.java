@@ -20,6 +20,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -66,6 +68,8 @@ public final class ViewRunner  implements Serializable{
     private JPanel outerDungeonPanel;
     private JPanel messagePanel;
     private JTextArea messageArea;
+    private JButton save;
+
 
     private GameController myController;
     private LinkedBlockingQueue<ViewToModelMessage> myVTMQueue;
@@ -87,8 +91,8 @@ public final class ViewRunner  implements Serializable{
     private ViewState myState = ViewState.MAIN_MENU;
     /// milliseconds
     private long myFrameTime = 16;
-    private Timer myTimer = null;
-    private Thread myRenderThread = null;
+    private transient Timer myTimer = null;
+    private transient Thread myRenderThread = null;
 
     //this is the EDT i think
     public ViewRunner(final GameController theController) {
@@ -116,23 +120,6 @@ public final class ViewRunner  implements Serializable{
         titleScreen = new TitleScreenPanel(new TitleScreenController(frame, cardLayout, mainPanel));
         mainPanel.add(titleScreen, "TitleScreen");
 
-        frame.getRootPane().addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_F2) {
-                    String finalPath = System.getProperty("user.dir") + "\\SaveFile.ser";
-                    Main.SerializedtheWorld(finalPath);
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
 
         myToGamePanelQueue = new LinkedBlockingQueue<>() {
             @Override
@@ -188,6 +175,18 @@ public final class ViewRunner  implements Serializable{
         messagePanel.add(new JScrollPane(messageArea));
         outerDungeonPanel.add(messagePanel, BorderLayout.SOUTH);
         messageArea.setText("");
+        save = new JButton("Save");
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                synchronized(this) {
+                    String finalPath = System.getProperty("user.dir") + "\\SaveFile.ser";
+                    Main.serializeTheWorld(finalPath);
+                }
+            }
+        });
+
+        outerDungeonPanel.add(save, BorderLayout.NORTH);
 
         mainPanel.add(outerDungeonPanel, "Dungeon");
 
@@ -210,6 +209,26 @@ public final class ViewRunner  implements Serializable{
 
     }
 
+
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject(); 
+
+        myRenderThread = new Thread(() -> {
+            dungeonPanel.run();
+        });
+        myTimer = new Timer();
+        myTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                checkQueues();
+            }
+        }, myFrameTime);
+
+
+        frame.setVisible(true);
+        myController.forceViewUpdate = true;
+    }
+
     public void checkQueues() {
         BufferStrategy bufferStrategy = frame.getBufferStrategy();
         
@@ -226,6 +245,26 @@ public final class ViewRunner  implements Serializable{
             if(input instanceof ChangeState cs) {
                 if(myState == ViewState.MAIN_MENU && cs.state == ViewState.GAME) {
                     cardLayout.show(mainPanel, "Dungeon");
+
+
+                    //frame.getContentPane().addKeyListener(new KeyListener() {
+                    //    @Override
+                    //    public void keyTyped(KeyEvent e) {
+                    //    }
+                    // 
+                    //    @Override
+                    //    public void keyPressed(KeyEvent e) {
+                    //        if (e.getKeyCode() == KeyEvent.VK_F2) {
+                    //            String finalPath = System.getProperty("user.dir") + "\\SaveFile.ser";
+                    //            Main.SerializedtheWorld(finalPath);
+                    //        }
+                    //    }
+                    // 
+                    //    @Override
+                    //    public void keyReleased(KeyEvent e) {
+                    //    }
+                    //});
+                    //frame.setFocusable(true);
 
                     ImageCapabilities acceleration = new ImageCapabilities(true);
                     try {
@@ -294,7 +333,13 @@ public final class ViewRunner  implements Serializable{
                     showHeroSelectionDialog(myFrame, myLayout, myMainPanel);
                     break;
                 case "Load Game":
-                    JOptionPane.showMessageDialog(myFrame, "Implement");
+                    //JOptionPane.showMessageDialog(myFrame, "Implement");
+                    synchronized(this) {
+                        String finalPath = System.getProperty("user.dir") + "\\SaveFile.ser";
+                        myController.setShouldClose(true);
+                        Main.deserializeTheWorld(finalPath);
+                        frame.dispose();
+                    }
                     break;
                 case "Exit":
                     System.exit(0);

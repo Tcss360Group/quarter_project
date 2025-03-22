@@ -1,5 +1,6 @@
 package dungeon.Controller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,14 +30,15 @@ import dungeon.Room;
 /**
  * handles initializing and running all SystemControllers that themselves create and run the world.
  */
-public final class GameController {
+public final class GameController implements Serializable {
+    private static final long serialVersionUID = 1L;
     //"global" info that i havent figured out where else to put yet TODO: dedicated singletons
 
     //indices of respective dimensions of the world in myDims
     public static final int WIDTH = Atom.X;
     public static final int HEIGHT = Atom.Y;
     public static final int DEPTH = Atom.Z;
-
+    public boolean forceViewUpdate = false;
 
     private ArrayList<DungeonCharacter> myMobs;
     private Hero myPlayer;
@@ -194,7 +196,13 @@ public final class GameController {
                 System.out.println("UNCAUGHT EXCEPTION FROM LOOP: " + e.getStackTrace());
                 continue;
             }
+            return;
         }
+    }
+
+    public void forceViewUpdate() {
+        InOut inout = (InOut)getSystemController(SystemControllerName.InOut);
+        inout.forceUpdate = true;
     }
 
     private void loop() throws Exception { //TODO: loop in player input through here to their mob?
@@ -224,7 +232,7 @@ public final class GameController {
         oldState = getState();
         setState(GameState.DONE);
         updateForState(oldState, getState());
-        System.out.println("game is done!");
+        //System.out.println("game is done!");
     }
 
     private boolean gameIsDone() {

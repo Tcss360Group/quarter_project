@@ -36,6 +36,7 @@ public class InOut extends SystemController {
     private ArrayList<AtomView> myCurrentAtomViews;
     private Rectangle myCurrentScreenMap;
     private boolean hasFiredBefore = false;
+    public boolean forceUpdate = false;
 
     public InOut(final GameController controller) {
         super(controller, NAME, INIT_STATE);
@@ -91,6 +92,10 @@ public class InOut extends SystemController {
             player.clickOn(clickedAtom);
         }
 
+        if(controller.forceViewUpdate) {
+            controller.forceViewUpdate = false;
+            anyUpdate = true;
+        }
 
         if(!anyUpdate) {
             hasFiredBefore = true;

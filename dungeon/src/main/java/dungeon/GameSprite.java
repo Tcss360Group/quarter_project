@@ -4,7 +4,13 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 
@@ -13,11 +19,11 @@ import dungeon.View.ImageDisplayApp;
 /**
  * the physical appearance of atoms.
  */
-public class GameSprite implements Cloneable { 
+public class GameSprite implements Cloneable, Serializable { 
     private double myRoomX;
     private double myRoomY;
     private double myLayer;
-    private BufferedImage myImage;
+    private transient BufferedImage myImage;
 
     /**
      * the width of our sprite on the screen as a ratio of a "standard tile" which takes up 1 / InOut.SCREEN_WIDTH_TILES of the screen horizontally
@@ -68,6 +74,29 @@ public class GameSprite implements Cloneable {
         this(theImagePath,x,y,0.0,0.5,0.5,theLayer);
     }
     
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        if(myImage != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(myImage, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+            oos.writeObject(imageBytes);
+        } else {
+            oos.writeObject(null);
+        }
+    }
+
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject(); 
+        byte[] imageBytes = (byte[]) ois.readObject(); 
+        if (imageBytes != null) {
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+            myImage = ImageIO.read(bais);
+        } else {
+            myImage = null;
+        }
+    }
 
     public double getX() {
         return myRoomX;

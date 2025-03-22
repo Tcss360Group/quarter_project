@@ -1,5 +1,7 @@
 package dungeon.Controller.SystemController;
 
+import java.io.Serializable;
+
 import dungeon.Controller.GameController;
 import dungeon.Controller.GameState;
 
@@ -7,8 +9,9 @@ import dungeon.Controller.GameState;
  * basic processors and handlers of global state in the world.
  * 
  */
-public abstract class SystemController {
+public abstract class SystemController implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final SystemControllerInitOrder DEFAULT_INIT_ORDER = SystemControllerInitOrder.DEFAULT;
     //no default name, always name SystemControllers
     private static final double DEFAULT_PRIORITY = 10.0;

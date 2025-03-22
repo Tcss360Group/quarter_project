@@ -17,7 +17,7 @@ public class Main implements Serializable {
     private static GameController controller = null;
     private static boolean debugConcurrency = false;
 
-    public static void SerializedtheWorld (String FilePath){
+    public static void serializeTheWorld (String FilePath){
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FilePath))) {
             oos.writeObject(controller);
             System.out.println("All objects serialized!");
@@ -25,7 +25,7 @@ public class Main implements Serializable {
             e.printStackTrace();
         }
     }
-    public static void deSerializetheWorld(String FilePath){
+    public static void deserializeTheWorld(String FilePath){
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FilePath))) {
             GameController deserializedObject = (GameController) ois.readObject();
 

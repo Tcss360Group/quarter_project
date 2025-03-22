@@ -18,11 +18,11 @@ import javax.swing.JPanel;
 public class TitleScreenPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final Image backgroundImage;
+    //private final Image backgroundImage;
 
     public TitleScreenPanel(ActionListener controller) {
         // Load the background image from the resources folder
-        backgroundImage = new ImageIcon("quarter_project/game_icons/TitleScreenBackGround.jpg").getImage();
+        //backgroundImage = new ImageIcon("quarter_project/game_icons/TitleScreenBackGround.jpg").getImage();
 
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -63,13 +63,13 @@ public class TitleScreenPanel extends JPanel {
         add(buttonPanel);
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the image to fill the panel
-        }
-    }
+    //@Override
+    //protected void paintComponent(Graphics g) {
+    //    super.paintComponent(g);
+    //    if (backgroundImage != null) {
+    //        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the image to fill the panel
+    //    }
+    //}
 
     private JButton createStyledButton(String text, Font font, Dimension size, ActionListener listener) {
         JButton button = new JButton(text);
