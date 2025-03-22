@@ -16,7 +16,7 @@ public class Ogre extends Monster {
     private int maxDamage;
 
     public Ogre(final Atom theLoc) {
-        super(theLoc, "Ogre", 0, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
+        super(theLoc, "Ogre", 100, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
         setSprite(new GameSprite("ogre.png", 0,0, 10));
         fetchStatsFromDatabase(); // Load stats dynamically from the database
     }

@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Gremlin extends Monster {
     public Gremlin(final Atom theLoc) {
-        super(theLoc, "Gremlin", 0, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
+        super(theLoc, "Gremlin", 100, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
         setSprite(new GameSprite("gremlin.png", 0,0, 10));
         fetchStatsFromDatabase(); // Pull stats from database
     }

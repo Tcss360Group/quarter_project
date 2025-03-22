@@ -8,7 +8,7 @@ import java.util.Random;
 public class Skeleton extends Monster {
 
     public Skeleton(final Atom theLoc) {
-        super(theLoc, "Skeleton", 0, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
+        super(theLoc, "Skeleton", 100, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
 
         setSprite(new GameSprite("skeleton.jpg", 0,0, 10));
         fetchStatsFromDatabase(); // Load stats dynamically

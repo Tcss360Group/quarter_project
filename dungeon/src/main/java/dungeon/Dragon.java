@@ -20,7 +20,7 @@ public class Dragon extends Monster {
 
     public Dragon(final Atom theLoc) {
         super(theLoc, NAME, HEALTH, DAMAGE, RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
-        setSprite(new GameSprite("dragon.png", 0,0, 0,0.8,0.8,10));
+        setSprite(new GameSprite("dragon.png", 100,0, 0,0.8,0.8,10));
         fetchStatsFromDatabase();
     }
 
