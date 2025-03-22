@@ -20,12 +20,15 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
+        DatabaseSetup.createTable();
         try {
             generateWorld(40, 4, false, true); 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
+        
 
     public static void generateWorld(final int theRoomsPerFloor, final int theNumFloors, final boolean theIsHeadLess, final boolean start) throws Exception {
 

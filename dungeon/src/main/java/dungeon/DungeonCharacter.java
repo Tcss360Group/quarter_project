@@ -155,7 +155,10 @@ public abstract class DungeonCharacter extends Movable {
     public double getMaxHealth() {
         return maxHealth;  // Return the max health (unchanged value)
     }
-
+    public double setDamage(double theDamage){
+        this.damage = theDamage;
+        return theDamage;
+    }
     public double getDamage() {
         return damage;
     }
