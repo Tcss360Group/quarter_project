@@ -16,6 +16,9 @@ public class MonsterFactory {
             case "gremlin" -> {
                 return new Gremlin(theLoc);
             }
+            case "dragon" -> {
+                return new Dragon(theLoc);
+            }
             default -> throw new IllegalArgumentException("Unknown monster type: " + type);
         }
     }
@@ -23,7 +26,10 @@ public class MonsterFactory {
     // random monster gen progress
     public static Monster createRandomMonster(final Atom theLoc) {
         String[] monsterTypes = {"ogre", "skeleton", "gremlin"};
-        String randomType = monsterTypes[RANDOM.nextInt(monsterTypes.length)];
+        return createRandomMonster(theLoc, monsterTypes);
+    }
+    public static Monster createRandomMonster(final Atom theLoc, final String[] theTypes) {
+        String randomType = theTypes[RANDOM.nextInt(theTypes.length)];
         return createMonster(randomType, theLoc);
     }
 }

@@ -4,6 +4,7 @@ import dungeon.Controller.GameController;
 
 public class Pillar extends Physical implements Pickupable {
     private static String DESCRIPTION = "A mysterious ancient pillar";
+    private static GameSprite DEFAULT_SPRITE = new GameSprite("pillar.png", -0.1f,0.0f, 0.0, 0.25,0.25, 20.0f);
     /// the stairs that lead from our spawning room to the floor below us, if any exists
     private Stairs myHereToBelow;
     /// the stairs that lead from the floor below us to our spawning room, if any exists
@@ -13,6 +14,7 @@ public class Pillar extends Physical implements Pickupable {
         super(theLoc, theName, DESCRIPTION);
         myHereToBelow = null;
         myBelowToHere = null;
+        setSprite(DEFAULT_SPRITE.clone());
     }
 
     @Override
@@ -46,13 +48,13 @@ public class Pillar extends Physical implements Pickupable {
 
     public void onPickedUp() {
         Hero loc = (Hero) getLoc();
-        System.out.println("you have picked up the pillar of " + getName() + "!");
+        Main.getController().pushMessage("You have picked up the pillar of " + getName() + "!");
         myHereToBelow.unlock();
         myBelowToHere.unlock();
     }
     
     public void onDropped() {
-        System.out.println("you have dropped the pillar of " + getName() + "!");
+        Main.getController().pushMessage("you have dropped the pillar of " + getName() + "!");
         myHereToBelow.lock();
         myBelowToHere.lock();
     }

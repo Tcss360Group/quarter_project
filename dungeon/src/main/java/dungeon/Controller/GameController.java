@@ -14,13 +14,13 @@ import dungeon.Controller.SystemController.InitializerTest;
 import dungeon.Controller.SystemController.MainMenu;
 import dungeon.Controller.SystemController.SystemController;
 import dungeon.Controller.SystemController.SystemControllerName;
+import dungeon.Messages.MTV.AddMessage;
 import dungeon.Messages.MTV.ModelToViewMessage;
 import dungeon.Messages.VTM.ViewToModelMessage;
 import dungeon.View.ViewRunner;
 import dungeon.DungeonCharacter;
 import dungeon.DungeonGenerationOptions;
 import dungeon.Hero;
-import dungeon.HeroStartPoint;
 import dungeon.Main;
 import dungeon.Pillar;
 import dungeon.Room;
@@ -40,7 +40,6 @@ public final class GameController {
 
     private ArrayList<DungeonCharacter> myMobs;
     private Hero myPlayer;
-    private HeroStartPoint myHeroStartPoint;
     /// game ends when all of these are collected by the player
     private ArrayList<Pillar> myPillars;
     private DungeonGenerationOptions myOptions;
@@ -240,7 +239,6 @@ public final class GameController {
             return true;
         }
         if(getState() != GameState.HAPPENING) {
-            System.out.println("game is in state: " + getState());
             return false;
         }
         int numCollectedPillars = 0;
@@ -306,19 +304,16 @@ public final class GameController {
         return myPlayer;
     }
 
-    public void setHeroStartPoint(final HeroStartPoint theStartPoint) {
-        myHeroStartPoint = theStartPoint;
-    }
-    public HeroStartPoint getHeroStartPoint() {
-        return myHeroStartPoint;
-    }
-
     public boolean getShouldClose() {
         return myShouldClose;
     }
 
     public void setShouldClose(final boolean myShouldClose) {
         this.myShouldClose = myShouldClose;
+    }
+
+    public void pushMessage(final String theMessage) {
+        myMTVQueue.add(new AddMessage(theMessage));
     }
 
 }

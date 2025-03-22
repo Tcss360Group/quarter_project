@@ -1,6 +1,7 @@
 package dungeon.View;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import java.awt.event.MouseEvent;
@@ -23,6 +24,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 
 public class GamePanel extends Canvas implements Runnable {
+    public static final long FRAMERATE_TARGET_MILLISECONDS = 16;
     private volatile boolean running = true; 
     private volatile boolean myMouseIsOver = false;
     private volatile Point myMousePos = null;
@@ -100,16 +102,24 @@ public class GamePanel extends Canvas implements Runnable {
                 Point posToUse = clickedPoint != null ? clickedPoint : myMousePos;
                 if(posToUse != null) {
                     synchronized(this) {
-
+                        AtomView highestLayerClickedView = null;
                         for(AtomView view : currentViews) {
-                            if(view.contains(posToUse)) {
-                                if(clickedPoint != null) {
-                                    outputQueue.add(new ClickedOn(view));
-                                }
-                                g.setColor(Color.BLACK);
-                                g.drawString(view.getName() + " id: " + view.getID() + " point: " + posToUse.toString() , 10, getHeight() / 2);
-                                break;
+                            Optional<Integer> ret = view.getContainingPixelAlpha(posToUse.getX(), posToUse.getY());
+                            if(ret.isEmpty()) {
+                                continue;
                             }
+                            int alphaValue = ret.get().intValue();
+                            if(alphaValue > 0 && (highestLayerClickedView == null || view.getSprite().getLayer() > highestLayerClickedView.getSprite().getLayer())) {
+                                highestLayerClickedView = view;
+                            }
+                        }
+                        if(highestLayerClickedView != null) {
+                            AtomView view = highestLayerClickedView;
+                            if(clickedPoint != null) {
+                                outputQueue.add(new ClickedOn(view));
+                            }
+                            g.setColor(Color.BLACK);
+                            g.drawString(view.getName(), 10, getHeight() - 50);
                         }
                     }
                 } 
@@ -124,7 +134,7 @@ public class GamePanel extends Canvas implements Runnable {
     private void sleepForABit(long startTime) {
 
         long elapsedTime = System.nanoTime() - startTime;
-        long sleepTime = Math.max(5, 16 - elapsedTime / 1_000_000);
+        long sleepTime = Math.max(5, FRAMERATE_TARGET_MILLISECONDS - elapsedTime / 1_000_000);
         try {
             Thread.sleep(sleepTime); 
         } catch (InterruptedException e) {

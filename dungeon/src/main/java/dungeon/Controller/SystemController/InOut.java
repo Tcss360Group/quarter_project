@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import dungeon.Atom;
+import dungeon.DungeonCharacter;
 import dungeon.Controller.GameController;
 import dungeon.Controller.GameState;
 import dungeon.Hero;
@@ -31,7 +32,6 @@ public class InOut extends SystemController {
     private static final boolean CAN_FIRE = true;
     private static final GameState INIT_STATE = GameState.HAPPENING;
 
-    private int[] myPlayerCoords;
     private HashMap<AtomView, Atom> myAtomsByView;
     private ArrayList<AtomView> myCurrentAtomViews;
     private Rectangle myCurrentScreenMap;
@@ -40,7 +40,6 @@ public class InOut extends SystemController {
     public InOut(final GameController controller) {
         super(controller, NAME, INIT_STATE);
         setCanFire(CAN_FIRE);
-        myPlayerCoords = null;
         myAtomsByView = new HashMap<>();
         myCurrentAtomViews = new ArrayList<>();
         myCurrentScreenMap = new Rectangle(0,0,1,1);
@@ -86,21 +85,12 @@ public class InOut extends SystemController {
         
         boolean anyUpdate = !hasFiredBefore;
         Hero player = controller.getPlayer();
-        int[] playerCoords = player.getOuterLoc().getCoords();
-
-        myCurrentScreenMap = new Rectangle(playerCoords[Atom.X] - SCREEN_WIDTH_TILES / 2, playerCoords[Atom.Y] - SCREEN_HEIGHT_TILES / 2, SCREEN_WIDTH_TILES, SCREEN_HEIGHT_TILES);
-
-        myCurrentScreenMap.setRect(
-            playerCoords[Atom.X] - myCurrentScreenMap.getWidth() / 2, 
-            playerCoords[Atom.Y] - myCurrentScreenMap.getHeight() / 2, 
-            myCurrentScreenMap.getWidth(), 
-            myCurrentScreenMap.getHeight()
-        );
 
         if(clickedAtom != null) {
             anyUpdate = true; 
             player.clickOn(clickedAtom);
         }
+
 
         if(!anyUpdate) {
             hasFiredBefore = true;
@@ -108,6 +98,13 @@ public class InOut extends SystemController {
         }
 
         Atom playerLoc = player.getOuterLoc();
+        int[] playerCoords = playerLoc.getCoords();
+
+        myCurrentScreenMap.setRect(
+            createScreenMapForPlayer(playerCoords, SCREEN_WIDTH_TILES, SCREEN_HEIGHT_TILES)
+        );
+
+        System.out.println("screen map currently at: " + myCurrentScreenMap.toString() + ", player is at: [" + playerCoords[Atom.X] + ", " + playerCoords[Atom.Y] + ", " + playerCoords[Atom.Z] + "]");
         ArrayList<Atom> atomsInView = playerLoc.getAtomsInView((int)myCurrentScreenMap.getWidth() / 2, (int)myCurrentScreenMap.getHeight() / 2);
 
         int id = 0;
@@ -127,5 +124,10 @@ public class InOut extends SystemController {
             e.printStackTrace();
         }
         hasFiredBefore = true;
+    }
+
+    private Rectangle createScreenMapForPlayer(final int[] theCoords, final int theWidth, final int theHeight) {
+
+        return new Rectangle(theCoords[Atom.X] - theWidth / 2, theCoords[Atom.Y] - theHeight / 2, theWidth, theHeight);
     }
 }

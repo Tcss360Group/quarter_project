@@ -2,6 +2,7 @@ package dungeon;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -17,9 +18,44 @@ public class GameSprite implements Cloneable {
     private double myRoomY;
     private double myLayer;
     private BufferedImage myImage;
-    static int numWindows = 0;
-    static int maxWindows = 10;
-    
+
+    /**
+     * the width of our sprite on the screen as a ratio of a "standard tile" which takes up 1 / InOut.SCREEN_WIDTH_TILES of the screen horizontally
+     */
+    private double myWidth;
+    /**
+     * the height of our sprite on the screen as a ratio of a "standard tile" which takes up 1 / InOut.SCREEN_HEIGHT_TILES of the screen vertically
+     */
+    private double myHeight;
+
+    private double myRotation;
+
+
+    public GameSprite(final String theImagePath, final double x, final double y, final double theRotation, final double theWidth, final double theHeight, final double theLayer) {
+        this.myRoomX = x;
+        this.myRoomY = y;
+        this.myLayer = theLayer;
+        this.myImage = null;
+        this.myWidth = theWidth;
+        this.myHeight = theHeight;
+        this.myRotation = theRotation;
+        if(theImagePath != null && !theImagePath.equals("")) {
+            setImage(theImagePath);
+        }
+    }
+
+    /**
+     * Constructor to initialize a GameSprite with position, layer, and icon.
+     * 
+     * @param theImagePath The path to the icon image.
+     * @param x The x-coordinate in the room.
+     * @param y The y-coordinate in the room.
+     * @param theLayer The layer value.
+    */
+    public GameSprite(final String theImagePath, final double x, final double y, final double theRotation, final double theLayer) {
+        this(theImagePath,x,y, theRotation,0.5,0.5, theLayer);
+    }
+
     /**
      * Constructor to initialize a GameSprite with position, layer, and icon.
      * 
@@ -29,11 +65,89 @@ public class GameSprite implements Cloneable {
      * @param theLayer The layer value.
     */
     public GameSprite(String theImagePath, double x, double y, double theLayer) {
-        // Implementation for loading the image would go here
+        this(theImagePath,x,y,0.0,0.5,0.5,theLayer);
+    }
+    
+
+    public double getX() {
+        return myRoomX;
+    }
+    public double getY() {
+        return myRoomY;
+    }
+    public double getLayer() {
+        return myLayer;
+    }
+    public double getWidth() {
+        return myWidth;
+    }
+    public double getHeight() {
+        return myHeight;
+    }
+    public double getRotation() {
+        return myRotation;
+    }
+    public BufferedImage getImage() {
+        BufferedImage ret = new BufferedImage(myImage.getWidth(), myImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = ret.createGraphics();
+        try {
+            g.drawImage(myImage, 0, 0, null);
+        } finally {
+            g.dispose();
+        }
+        return ret;
+    }
+
+
+    public void setX(double x) {
         this.myRoomX = x;
+    }
+    
+    public void setY(double y) {
         this.myRoomY = y;
+    }
+    
+    public void setTranslation(double x, double y) {
+        myRoomX = x;
+        myRoomY = y;
+    }
+
+    public void translate(double dx, double dy) {
+        setTranslation(myRoomX + dx, myRoomY + dy);
+    }
+
+    public void setRotation(double theta) {
+        myRotation = theta;
+    }
+    public void rotate(double theta) {
+        myRotation += theta;
+    }
+
+    public void setScale(double theScaleX, double theScaleY) {
+        myWidth = theScaleX;
+        myHeight = theScaleY;
+    }
+    public void scale(double theScaleX, double theScaleY) {
+        myWidth *= theScaleX;
+        myHeight *= theScaleY;
+    }
+    public void scaleWidth(final double theScale) {
+        myWidth *= theScale;
+    }
+    public void scaleHeight(final double theScale) {
+        myHeight *= theScale;
+    }
+
+    public void setLayer(double theLayer) {
         this.myLayer = theLayer;
-        this.myImage = null;
+    }
+    
+    public void setImage(final BufferedImage icon) {
+        this.myImage = icon;
+    }
+
+    public void setImage(final String theImagePath) {
+
         String path = theImagePath != null ? theImagePath : "";
         String finalPath = System.getProperty("user.dir") + "\\game_icons\\" + path;
         try {
@@ -54,100 +168,18 @@ public class GameSprite implements Cloneable {
             myImage = new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
         }
     }
-    
-    public double getX() {
-        return myRoomX;
-    }
-    public double getY() {
-        return myRoomY;
-    }
-    public double getLayer() {
-        return myLayer;
-    }
-    public BufferedImage getImage() {
-        BufferedImage ret = new BufferedImage(myImage.getWidth(), myImage.getHeight(), myImage.getType());
-        Graphics2D g = ret.createGraphics();
-        try {
-            g.drawImage(myImage, 0, 0, null);
-        } finally {
-            g.dispose();
-        }
-        
-        int width = ret.getWidth();
-        int height = ret.getHeight();
 
-        boolean anyNonZero = false;
-
-        //for(int y = 0; y < height; y++) {
-        //    for(int x = 0; x < width; x++) {
-        //        int rgb = ret.getRGB(x,y);
-        //        int red = (rgb >> 16) & 0xFF;
-        //        int green = (rgb >> 8) & 0xFF;
-        //        int blue = rgb & 0xFF;
-        //
-        //        if(red != 0 || green != 0 || blue != 0) {
-        //            anyNonZero = true;
-        //            System.out.printf("RET Pixel (%d, %d): R=%d, G=%d, B=%d\n", x, y, red, green, blue); 
-        //        }
-        //        
-        //        // Print the RGB values
-        //    }
-        //}
-        //
-        //if(anyNonZero == false) {
-        //    for(int y = 0; y < height; y++) {
-        //        for(int x = 0; x < width; x++) {
-        //            int rgb = myImage.getRGB(x,y);
-        //            int red = (rgb >> 16) & 0xFF;
-        //            int green = (rgb >> 8) & 0xFF;
-        //            int blue = rgb & 0xFF;
-        //
-        //            if(red != 0 || green != 0 || blue != 0) {
-        //                anyNonZero = true;
-        //                System.out.printf("myImage Pixel (%d, %d): R=%d, G=%d, B=%d\n", x, y, red, green, blue); 
-        //            }
-        //            
-        //            // Print the RGB values
-        //        }
-        //    }
-        //}
-        //
-        //if(numWindows < maxWindows) {
-        //    numWindows++;
-        //    ImageDisplayApp.main(null);
-        //    try {
-        //        ImageDisplayApp.updateDisplayedImage(myImage, finalPath);
-        //    } catch(Exception e) {
-        //        e.printStackTrace();
-        //    }
-        //
-        //}
-        return ret;
+    public void setWidth(final double theWidth) {
+        myWidth = theWidth;
     }
-
-    public void setX(double x) {
-        this.myRoomX = x;
-    }
-    
-    public void setY(double y) {
-        this.myRoomY = y;
-    }
-    
-    public void setLayer(float theLayer) {
-        this.myLayer = theLayer;
-    }
-    
-    public void setImage(final BufferedImage icon) {
-        this.myImage = icon;
+    public void setHeight(final double theHeight) {
+        myHeight = theHeight;
     }
 
     public GameSprite clone() {
-        GameSprite ret = new GameSprite("", myRoomX, myRoomY, myLayer);
+        GameSprite ret = new GameSprite("", myRoomX, myRoomY, myRotation, myWidth, myHeight, myLayer);
         if(myImage != null) {
             ret.setImage(getImage());
-            if(!areImagesEqual(myImage, ret.myImage)) {
-                int asda = 1;
-            }
         }
         //if(numWindows < maxWindows) {
         //    numWindows++;

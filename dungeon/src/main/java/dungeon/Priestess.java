@@ -1,5 +1,7 @@
 package dungeon;
 
+import java.util.ArrayList;
+
 public class Priestess extends Hero {
     private static final double DEFAULT_HEALTH = 75.0;
     private static final double DEFAULT_DAMAGE = 0.0; 
@@ -21,7 +23,7 @@ public class Priestess extends Hero {
     @Override
     public double attack() {
         if (Math.random() < HIT_CHANCE) {
-            return Math.round(MIN_DAMAGE + Math.random() * (MAX_DAMAGE - MIN_DAMAGE));
+            return Math.round(MIN_DAMAGE + Math.random() * (getSumWeaponMod() + MAX_DAMAGE - MIN_DAMAGE));
         }
         return 0;
     }
@@ -34,14 +36,18 @@ public class Priestess extends Hero {
     }
 
     @Override
-    public void useSpecialSkill() {
+    public ArrayList<String> useSpecialSkill(final DungeonCharacter theTarget) {
+        ArrayList<String> ret = new ArrayList<>();
         double chance = Math.random();
         if (chance < 0.5) {
-            System.out.println("Priestess uses her special healing skill!");
-            heal();
+            ret.add("Priestess uses her special healing skill!");
+            addHealth(heal());
         } else {
-            System.out.println("Priestess performs a normal attack.");
-            System.out.println("Damage dealt: " + attack());
+            ret.add("Priestess performs a normal attack.");
+            double damage = attack();
+            theTarget.addHealth(-damage);
+            ret.add("Damage dealt: " + damage);
         }
+        return ret;
     }
 }

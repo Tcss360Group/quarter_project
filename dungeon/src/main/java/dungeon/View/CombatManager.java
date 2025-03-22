@@ -1,9 +1,10 @@
-package dungeon;
+package dungeon.View;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -15,6 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import dungeon.Atom;
+import dungeon.DungeonCharacter;
+import dungeon.HealthPotion;
+import dungeon.Hero;
 
 public class CombatManager {
     private static final Random rand = new Random();
@@ -60,14 +66,24 @@ public class CombatManager {
 
         attackButton.addActionListener(e -> {
             double heroAttackDamage = hero.attack();
-            battleMessage.append(hero.getName() + " attacks and deals " + heroAttackDamage + " damage to " + monster.getName() + "\n");
+            String msg = hero.getName() + " attacks and deals " + Math.round(heroAttackDamage) + " damage to " + monster.getName();
+            int numSwords = 0;
+            if(hero instanceof Hero hro) {
+                numSwords = hro.getNumSwords();
+            }
+            String numSwordsStr = "";
+            if(numSwords > 0) {
+                numSwordsStr = " with their " + numSwords + " swords!";
+            }
+            String finMsg = msg + numSwordsStr + "\n";
+            battleMessage.append(finMsg);
 
             monster.setHealth(monster.getHealth() - heroAttackDamage);
             updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
 
             if (monster.getHealth() <= 0) {
                 battleMessage.append(monster.getName() + " has been defeated!\n");
-                endBattle(battleDialog, hero);
+                endBattle(battleDialog, hero, monster);
             } else {
                 monsterTurn(hero, monster, battleMessage, heroHealthBar, battleDialog);
             }
@@ -76,13 +92,17 @@ public class CombatManager {
         specialButton.addActionListener(e -> {
             battleMessage.append(hero.getName() + " uses special skill!\n");
             if(hero instanceof Hero hro) {
-                hro.useSpecialSkill();
+                ArrayList<String> messages = hro.useSpecialSkill(monster);
+                for(String str : messages) {
+                    battleMessage.append(str + "\n");
+                }
             }
+            updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());
             updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
 
             if (monster.getHealth() <= 0) {
                 battleMessage.append(monster.getName() + " has been defeated!\n");
-                endBattle(battleDialog, hero);
+                endBattle(battleDialog, hero, monster);
             } else {
                 monsterTurn(hero, monster, battleMessage, heroHealthBar, battleDialog);
             }
@@ -90,14 +110,28 @@ public class CombatManager {
 
         // Health Potion Button ActionListener
         healthPotionButton.addActionListener(e -> {
+            HealthPotion potion = null;
+            for(Atom content : hero.getRecursiveContents()) {
+                if(content instanceof HealthPotion pot) {
+                    potion = pot;
+                    break;
+                }
+            }
+            if(potion == null) {
+                battleMessage.append("You don't have any potions!");
+                return;
+            }
             if (hero.getHealth() <= 0) {
                 battleMessage.append("You cannot use a potion. " + hero.getName() + " has been defeated!\n");
                 return;
             }
 
-            double newHealth = Math.min(hero.getHealth() + HEALTH_POTION_HEAL_AMOUNT, hero.getMaxHealth());
-            double healedAmount = newHealth - hero.getHealth();
-            hero.setHealth(newHealth);
+            double oldHealth = hero.getHealth();
+            potion.use(hero);
+            potion = null;
+
+            double newHealth = hero.getHealth();
+            double healedAmount = newHealth - oldHealth;
 
             battleMessage.append(hero.getName() + " used a Health Potion and restored " + (int) healedAmount + " HP!\n");
             updateHealthBar(heroHealthBar, hero.getHealth(), hero.getMaxHealth());
@@ -124,7 +158,7 @@ public class CombatManager {
 
                     monster.setHealth(0);
                     updateHealthBar(monsterHealthBar, monster.getHealth(), monster.getMaxHealth());
-                    endBattle(battleDialog, hero);
+                    endBattle(battleDialog, hero, monster);
                 }
             }
         });
@@ -159,18 +193,19 @@ public class CombatManager {
 
             if (hero.getHealth() <= 0) {
                 battleMessage.append(hero.getName() + " has been defeated!\n");
-                endBattle(battleDialog, hero);
+                endBattle(battleDialog, hero, monster);
             }
         }
     }
 
-    private static void endBattle(JDialog battleDialog, DungeonCharacter hero) {
+    private static void endBattle(final JDialog battleDialog, final DungeonCharacter hero, final DungeonCharacter theMonster) {
         if (hero.getHealth() <= 0) {
             JOptionPane.showMessageDialog(battleDialog, "Game Over! " + hero.getName() + " has been defeated.", "Game Over", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         } else {
             JOptionPane.showMessageDialog(battleDialog, "The battle is over!");
             battleDialog.dispose();
+            theMonster.die();
         }
     }
 }

@@ -1,5 +1,6 @@
 package dungeon.View;
 
+import java.awt.BorderLayout;
 import java.awt.BufferCapabilities;
 import java.awt.Canvas;
 import java.awt.CardLayout;
@@ -30,11 +31,15 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import dungeon.Atom;
+import dungeon.DungeonCharacter;
 import dungeon.Main;
 import dungeon.Controller.GameController;
+import dungeon.Messages.MTV.AddMessage;
 import dungeon.Messages.MTV.ChangeState;
 import dungeon.Messages.MTV.ModelToViewMessage;
 import dungeon.Messages.MTV.Update;
@@ -48,12 +53,15 @@ import dungeon.MonsterFactory;
 import dungeon.Room;
 import dungeon.View.ViewState;
 
-public class ViewRunner {
+public final class ViewRunner {
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
     private TitleScreenPanel titleScreen;
     private GamePanel dungeonPanel;
+    private JPanel outerDungeonPanel;
+    private JPanel messagePanel;
+    private JTextArea messageArea;
 
     private GameController myController;
     private LinkedBlockingQueue<ViewToModelMessage> myVTMQueue;
@@ -63,10 +71,6 @@ public class ViewRunner {
     private LinkedBlockingQueue<ViewToRenderMessage> myToGamePanelQueue;
     private LinkedBlockingQueue<RenderToViewMessage> myFromGamePanelQueue;
 
-    private ConcurrentLinkedQueue<MouseEvent> myMouseEvents = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<KeyEvent> myKeyEvents = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<ActionEvent> myActionEvents = new ConcurrentLinkedQueue<>();
-
     private JButton[][] rooms = new JButton[5][5];
     private String selectedHero = "";  // To store the selected hero
     //private Hero hero;  // The player's hero
@@ -75,8 +79,6 @@ public class ViewRunner {
     private double scaleX = 1.0 / 32.0;
     private double scaleY = 1.0 / 32.0;
 
-    private ArrayList<AtomView> myAtomsInView;
-    private AffineTransform myTransform;
 
     private ViewState myState = ViewState.MAIN_MENU;
     /// milliseconds
@@ -84,14 +86,11 @@ public class ViewRunner {
     private Timer myTimer = null;
     private Thread myRenderThread = null;
 
-
     //this is the EDT i think
     public ViewRunner(final GameController theController) {
         myController = theController;
         myMTVQueue = (LinkedBlockingQueue<ModelToViewMessage>)myController.myMTVQueue;
         myVTMQueue = (LinkedBlockingQueue<ViewToModelMessage>)myController.myVTMQueue;
-        myAtomsInView = new ArrayList<>();
-        myTransform = null;
         myTimer = new Timer();
 
         frame = new JFrame("Dungeon Adventure Game");
@@ -152,11 +151,21 @@ public class ViewRunner {
             }
         };
 
+        outerDungeonPanel = new JPanel(new BorderLayout());
         // Dungeon grid setup
         //dungeonPanel = new JPanel(new GridLayout(5, 5));
         // Dungeon grid setup
         dungeonPanel = new GamePanel(myToGamePanelQueue, myFromGamePanelQueue);
-        mainPanel.add(dungeonPanel, "Dungeon");
+        outerDungeonPanel.add(dungeonPanel, BorderLayout.CENTER);
+
+        messagePanel = new JPanel();
+        messageArea = new JTextArea(10, 100);
+        messageArea.setEditable(false);
+        messagePanel.add(new JScrollPane(messageArea));
+        outerDungeonPanel.add(messagePanel, BorderLayout.SOUTH);
+        messageArea.setText("");
+
+        mainPanel.add(outerDungeonPanel, "Dungeon");
 
         frame.add(mainPanel);
         cardLayout.show(mainPanel, "TitleScreen"); // Show title screen first
@@ -211,9 +220,11 @@ public class ViewRunner {
                 }
                 ArrayList<AtomView> newAtoms = up.views;
                 newAtoms.sort((a, b) -> {return (int) (a.getSprite().getLayer() - b.getSprite().getLayer());});
-                myAtomsInView = newAtoms;
                 toRender.add(new Update((ArrayList<AtomView>)newAtoms.clone()));
                 continue;
+            } else if(input instanceof AddMessage am) {
+                messageArea.append(am.message + "\n");
+                messageArea.setCaretPosition(messageArea.getDocument().getLength());
             }
         }
         while(!fromRender.isEmpty()) {
@@ -238,35 +249,6 @@ public class ViewRunner {
     public String getHero() {
         return selectedHero;
     }
-
-    private AffineTransform createTransform(final int[] theCoords) {
-        AffineTransform ret = AffineTransform.getScaleInstance(scaleX, scaleY);
-        ret.translate(theCoords[Atom.X], theCoords[Atom.Y]);
-        return ret;
-    }
-    
-    public void updateView(final ArrayList<AtomView> theNewAtoms) {
-        //myTransform = createTransform(theCoords);
-        theNewAtoms.sort((a, b) -> {return (int) (a.getSprite().getLayer() - b.getSprite().getLayer());});
-        //myAtomsInView = theNewAtoms;
-
-        
-        //mainPanel.repaint();
-    }
-
-    // Initialize dungeon grid
-    //private void initializeDungeon() {
-    //    dungeonPanel.removeAll(); // Clear panel before adding rooms
-    //    for (int i = 0; i < 5; i++) {
-    //        for (int j = 0; j < 5; j++) {
-    //            rooms[i][j] = new JButton("Room " + (i * 5 + j + 1));
-    //            rooms[i][j].addActionListener(new RoomActionListener(i, j)); // Link rooms to combat
-    //            dungeonPanel.add(rooms[i][j]);
-    //        }
-    //    }
-    //    dungeonPanel.revalidate();
-    //    dungeonPanel.repaint();
-    //}
 
     // Title screen controller to handle button clicks
     private class TitleScreenController implements ActionListener {

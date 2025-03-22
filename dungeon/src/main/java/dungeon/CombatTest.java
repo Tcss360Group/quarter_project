@@ -46,14 +46,7 @@ public class CombatTest {
                     warriorAttackDamage = warrior.attack();
                     System.out.println(warrior.getName() + " attacks and deals " + warriorAttackDamage + " damage to " + enemy.getName());
                 } else if (choice == 2) {
-                    warrior.useSpecialSkill();
-                    // Special attack should deal damage, but it's only printed in `useSpecialSkill()`
-                    // Let's adjust so we apply the damage properly
-                    if (Math.random() < 0.4) { // Special attack success rate
-                        warriorAttackDamage = 75 + Math.random() * 100;
-                        warriorAttackDamage = Math.ceil(warriorAttackDamage);
-                        enemy.setHealth(enemy.getHealth() - warriorAttackDamage);
-                    }
+                    warrior.useSpecialSkill(enemy);
                 } else {
                     System.out.println("Invalid choice! You lost your turn.");
                 }

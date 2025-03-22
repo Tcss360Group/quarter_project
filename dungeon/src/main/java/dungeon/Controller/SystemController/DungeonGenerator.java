@@ -11,14 +11,16 @@ import dungeon.Dir;
 import dungeon.Door;
 import dungeon.DungeonCharacter;
 import dungeon.DungeonGenerationOptions;
+import dungeon.HealthPotion;
 import dungeon.Hero;
-import dungeon.HeroStartPoint;
+import dungeon.MonsterFactory;
 import dungeon.Ogre;
 import dungeon.Pillar;
 import dungeon.Priestess;
 import dungeon.Room;
 import dungeon.Skeleton;
 import dungeon.Stairs;
+import dungeon.Sword;
 import dungeon.Thief;
 import dungeon.Warrior;
 
@@ -26,7 +28,6 @@ import dungeon.Warrior;
  * handles generating the world
  */
 public final class DungeonGenerator extends SystemController {
-
     private static final SystemControllerName NAME = SystemControllerName.DungeonGenerator;
     private static final SystemControllerInitOrder ORDER = SystemControllerInitOrder.DungeonGenerator;
     private static final GameState INIT_STATE = GameState.LOADING;
@@ -45,7 +46,6 @@ public final class DungeonGenerator extends SystemController {
         Pillar myPillar;
         ArrayList<DungeonCharacter> myCharacters;
         ArrayList<Atom> myAtoms;
-        HeroStartPoint myStartPoint;
 
         DungeonGenerationFloor(final int theWidth, final int theHeight) {
             myRooms = new ArrayList<>();
@@ -56,7 +56,6 @@ public final class DungeonGenerator extends SystemController {
             myPillar = null;
             myCharacters = new ArrayList<>();
             myAtoms = new ArrayList<>();
-            myStartPoint = null;
         }
 
     }
@@ -75,8 +74,7 @@ public final class DungeonGenerator extends SystemController {
         MainMenu menu = (MainMenu)controller.getSystemController(SystemControllerName.MainMenu);
         String selectedHero = menu.getHeroSelection(); // this sucks man i need to figure something better out
 
-        HeroStartPoint landMark = mapAndAtoms.startPoint;
-        Room startPoint = (Room)landMark.getOuterLoc();
+        Room startPoint = mapAndAtoms.startPoint;
         Hero hero = null;
         switch (selectedHero) {
             case "Warrior":
@@ -105,7 +103,7 @@ public final class DungeonGenerator extends SystemController {
         public Room[][][] map;
         public ArrayList<Atom> atoms;
         public ArrayList<DungeonCharacter> characters;
-        public HeroStartPoint startPoint;
+        public Room startPoint;
 
         public CreateMapRet() {
             map = null;
@@ -125,15 +123,25 @@ public final class DungeonGenerator extends SystemController {
 
         ret.map = new Room[depth][height][width];
         for (int i = 0; i < depth; i++) {
-            DungeonGenerationFloor floor = floors.get(depth - 1 - i); //floors are generated top down, we're placing them bottom up
+            DungeonGenerationFloor floor = floors.get(i); //floors are generated top down, we're placing them bottom up
+
+            if (i < depth - 1) {
+                DungeonGenerationFloor theFloorBelow = floors.get(i + 1);
+                theFloorBelow.myAtoms.add(new Stairs(theFloorBelow.myEntrance, floor.myBossRoom));
+                Stairs stairs = new Stairs(floor.myBossRoom, theFloorBelow.myEntrance);
+                stairs.lock();
+                floor.myAtoms.add(stairs);
+            }
+
+            if (i == 0) {
+                ret.startPoint = floor.myEntrance;
+            }
+
             ret.characters.addAll(floor.myCharacters);
             ret.atoms.addAll(floor.myAtoms);
-            if(floor.myStartPoint != null) {
-                ret.startPoint = floor.myStartPoint;
-            }
             for (int j = 0; j < height; j++) {
                 for (int k = 0; k < width; k++) {
-                    ret.map[i][j][k] = floor.myMap[j][k];
+                    ret.map[depth - i - 1][j][k] = floor.myMap[j][k];
                 }
             }
 
@@ -168,19 +176,6 @@ public final class DungeonGenerator extends SystemController {
                     rng,
                     theOptions);
 
-            if (i > 0) {
-                DungeonGenerationFloor theFloorAbove = ret.getLast();
-                floor.myAtoms.add(new Stairs(floor.myEntrance, theFloorAbove.myBossRoom));
-                Stairs stairs = new Stairs(theFloorAbove.myBossRoom, floor.myEntrance);
-                stairs.lock();
-                theFloorAbove.myAtoms.add(stairs);
-            }
-
-            if (i == 0) {
-                HeroStartPoint startPoint = new HeroStartPoint(floor.myEntrance);
-                floor.myAtoms.add(startPoint);
-                floor.myStartPoint = startPoint;
-            }
 
             ret.add(floor);
 
@@ -237,18 +232,17 @@ public final class DungeonGenerator extends SystemController {
             theFloorAbove = theFloorsAbove.getLast();
         }
 
+        int roomGenerationChance = theOptions.getRoomGenerationChance();
+        int healthPotionGenerationChance = theOptions.getHealthPotionGenerationChance();
+        int swordGenerationChance = theOptions.getSwordGenerationChance();
+
         DungeonGenerationFloor floor = new DungeonGenerationFloor(theWidth, theHeight);
-        theFloorsAbove.add(floor);
 
         if (theFloorAbove != null) {
             int[] coords = theFloorAbove.myBossRoom.getCoords();
             x = coords[Atom.X];
             y = coords[Atom.Y];
         }
-        
-        
-        System.out.println("x " + x + " y " + y);
-
 
         Room currentRoom = addRoom(floor, new Room(new int[] { x, y, z }));
         floor.myEntrance = currentRoom;
@@ -274,16 +268,9 @@ public final class DungeonGenerator extends SystemController {
                     selectCoords = new int[] { borderCoords[Atom.X] + 1, borderCoords[Atom.Y], borderCoords[Atom.Z] };
                     selectRoom = floor.myMap[selectCoords[Atom.Y]][selectCoords[Atom.X]];
                     if (selectRoom == null) {
-                        if (theRNG.nextInt(1, 100) > 75) {
+                        if (theRNG.nextInt(1, 100) <= roomGenerationChance) {
                             selectRoom = addRoom(floor, new Room(selectCoords));
                             newBorder.add(selectRoom);
-
-                            Door usToThem = new Door(selectRoom, borderRoom);
-                            floor.myAtoms.add(usToThem);
-                            Door themToUs = new Door(borderRoom, selectRoom);
-                            floor.myAtoms.add(themToUs);
-                            usToThem.unlock();
-                            themToUs.unlock();
 
                             roomsCreated++;
                         } else {
@@ -295,16 +282,9 @@ public final class DungeonGenerator extends SystemController {
                     selectCoords = new int[] { borderCoords[Atom.X], borderCoords[Atom.Y] + 1, borderCoords[Atom.Z] };
                     selectRoom = floor.myMap[selectCoords[Atom.Y]][selectCoords[Atom.X]];
                     if (selectRoom == null) {
-                        if (theRNG.nextInt(1, 100) > 75) {
+                        if (theRNG.nextInt(1, 100) <= roomGenerationChance) {
                             selectRoom = addRoom(floor, new Room(selectCoords));
                             newBorder.add(selectRoom);
-
-                            Door usToThem = new Door(selectRoom, borderRoom);
-                            floor.myAtoms.add(usToThem);
-                            Door themToUs = new Door(borderRoom, selectRoom);
-                            floor.myAtoms.add(themToUs);
-                            usToThem.unlock();
-                            themToUs.unlock();
 
                             roomsCreated++;
                         } else {
@@ -316,16 +296,9 @@ public final class DungeonGenerator extends SystemController {
                     selectCoords = new int[] { borderCoords[Atom.X] - 1, borderCoords[Atom.Y], borderCoords[Atom.Z] };
                     selectRoom = floor.myMap[selectCoords[Atom.Y]][selectCoords[Atom.X]];
                     if (selectRoom == null) {
-                        if (theRNG.nextInt(1, 100) > 75) {
+                        if (theRNG.nextInt(1, 100) <= roomGenerationChance) {
                             selectRoom = addRoom(floor, new Room(selectCoords));
                             newBorder.add(selectRoom);
-
-                            Door usToThem = new Door(selectRoom, borderRoom);
-                            floor.myAtoms.add(usToThem);
-                            Door themToUs = new Door(borderRoom, selectRoom);
-                            floor.myAtoms.add(themToUs);
-                            usToThem.unlock();
-                            themToUs.unlock();
 
                             roomsCreated++;
                         } else {
@@ -337,16 +310,9 @@ public final class DungeonGenerator extends SystemController {
                     selectCoords = new int[] { borderCoords[Atom.X], borderCoords[Atom.Y] - 1, borderCoords[Atom.Z] };
                     selectRoom = floor.myMap[selectCoords[Atom.Y]][selectCoords[Atom.X]];
                     if (selectRoom == null) {
-                        if (theRNG.nextInt(1, 100) > 75) {
+                        if (theRNG.nextInt(1, 100) <= roomGenerationChance) {
                             selectRoom = addRoom(floor, new Room(selectCoords));
                             newBorder.add(selectRoom);
-
-                            Door usToThem = new Door(selectRoom, borderRoom);
-                            floor.myAtoms.add(usToThem);
-                            Door themToUs = new Door(borderRoom, selectRoom);
-                            floor.myAtoms.add(themToUs);
-                            usToThem.unlock();
-                            themToUs.unlock();
 
                             roomsCreated++;
                         } else {
@@ -361,20 +327,17 @@ public final class DungeonGenerator extends SystemController {
 
                 if (roomsCreated >= theNumRooms) {
                     floor.myBossRoom = borderRoom;
+                    String bossName = "ogre";
+                    if(z <= 0) {
+                        bossName = "dragon";
+                    }
                     if (thePlacePillar) {
                         addPillar(floor, new Pillar(borderRoom, thePillarName));
                         //TODO: figure out how to track what kinds of bosses have already been used
-                        addMob(floor, new Ogre(borderRoom));
+                        addMob(floor, MonsterFactory.createMonster(bossName, borderRoom));
                     }
                 }
                 
-                //no monsters in the first room and no additional monsters in the boss room
-                if (floor.myBossRoom != borderRoom && roomsCreated > 0) {
-                    int monsterRoll = theRNG.nextInt(100);
-                    if (monsterRoll < theOptions.getNonBossRoomMonsterChance()) {
-                        addMob(floor, new Skeleton(borderRoom));
-                    }
-                }
 
             }
             border = newBorder;
@@ -386,6 +349,23 @@ public final class DungeonGenerator extends SystemController {
                 Room room = floor.myMap[y][x];
                 if(room == null) {
                     continue;
+                }
+
+                //add random chance
+                //no monsters in the first room and no additional monsters in the boss room
+                if (floor.myBossRoom != room && floor.myEntrance != room && roomsCreated > 0) {
+                    int monsterRoll = theRNG.nextInt(1,100);
+                    if (monsterRoll < theOptions.getNonBossRoomMonsterChance()) {
+                        addMob(floor, MonsterFactory.createRandomMonster(room, new String[]{"skeleton", "gremlin"}));
+                    }
+                    int healthRoll = theRNG.nextInt(1,100);
+                    if(healthRoll < theOptions.getHealthPotionGenerationChance()) {
+                        addAtom(floor, new HealthPotion(room, theRNG, 50, 130));
+                    }
+                    int swordRoll = theRNG.nextInt(1,100); 
+                    if(swordRoll < theOptions.getSwordGenerationChance()) {
+                        addAtom(floor, new Sword(room, theRNG.nextDouble(20.0, 40.0)));
+                    }
                 }
 
                 ArrayList<Dir> dirs = new ArrayList<>(Arrays.asList(Dir.N, Dir.E, Dir.W, Dir.S));
@@ -421,12 +401,15 @@ public final class DungeonGenerator extends SystemController {
                         }
                         case Dir.E -> {
                             dx++;
+                            break;
                         }
                         case Dir.S -> {
                             dy++;
+                            break;
                         }
                         case Dir.W -> {
                             dx--;
+                            break;
                         }
                     }
 

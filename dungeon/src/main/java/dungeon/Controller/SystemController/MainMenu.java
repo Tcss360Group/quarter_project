@@ -1,5 +1,6 @@
 package dungeon.Controller.SystemController;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.BlockingQueue;
 
 import javax.swing.SwingUtilities;
@@ -58,7 +59,11 @@ public class MainMenu extends SystemController {
                 });
                 myHasStarted = true;
 
-            } catch(Exception e) {
+            } catch(InvocationTargetException e) {
+                System.out.println("unable to start the View! " + e.getTargetException());
+                System.exit(1);
+            }            
+            catch(Exception e) {
                 System.out.println("unable to start the View! " + e.getStackTrace());
                 System.exit(1);
             }
