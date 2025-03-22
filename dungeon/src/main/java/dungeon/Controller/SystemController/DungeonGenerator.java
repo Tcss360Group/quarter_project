@@ -71,8 +71,14 @@ public final class DungeonGenerator extends SystemController {
         AtomLoader loader = (AtomLoader) controller.getSystemController(SystemControllerName.AtomLoader);
         CreateMapRet mapAndAtoms = createMap(controller.getOptions());
 
-        MainMenu menu = (MainMenu)controller.getSystemController(SystemControllerName.MainMenu);
-        String selectedHero = menu.getHeroSelection(); // this sucks man i need to figure something better out
+        boolean isHeadless = controller.getIsHeadless();
+        String selectedHero = null;
+        if(!isHeadless) {
+            MainMenu menu = (MainMenu)controller.getSystemController(SystemControllerName.MainMenu);
+            selectedHero = menu.getHeroSelection(); // this sucks man i need to figure something better out
+        } else {
+            selectedHero = "Warrior";
+        }
 
         Room startPoint = mapAndAtoms.startPoint;
         Hero hero = null;
