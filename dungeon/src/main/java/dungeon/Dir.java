@@ -4,7 +4,8 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Optional;
 
-public enum Dir {
+public enum Dir  {
+
     N, E, S, W;
 
     /// returns the one dir representing the difference between us and them as points. 

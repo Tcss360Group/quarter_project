@@ -1,5 +1,6 @@
 package dungeon;
 
+
 ///named values for the ability to see other things or not be seen by other things.
 public enum VisionPower {
     NONE(0),

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,7 +23,9 @@ import dungeon.DungeonCharacter;
 import dungeon.HealthPotion;
 import dungeon.Hero;
 
-public class CombatManager {
+public class CombatManager implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     private static final Random rand = new Random();
     private static final int HEALTH_POTION_HEAL_AMOUNT = 30; // Health restored by potion
 

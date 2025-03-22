@@ -1,9 +1,12 @@
 package dungeon;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DatabaseConnection {
+public class DatabaseConnection implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static Connection connect() {
         String url = "jdbc:sqlite:dungeon_game.db"; // SQLite database file
         Connection conn = null;

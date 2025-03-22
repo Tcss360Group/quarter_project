@@ -1,5 +1,6 @@
 package dungeon;
 
+
 import dungeon.Controller.GameController;
 
 public class Pillar extends Physical implements Pickupable {

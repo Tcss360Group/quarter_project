@@ -16,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class TitleScreenPanel extends JPanel {
+    private static final long serialVersionUID = 1L;
+
     private final Image backgroundImage;
 
     public TitleScreenPanel(ActionListener controller) {

@@ -20,6 +20,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -53,7 +54,10 @@ import dungeon.MonsterFactory;
 import dungeon.Room;
 import dungeon.View.ViewState;
 
-public final class ViewRunner {
+public final class ViewRunner  implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
+
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
@@ -96,6 +100,7 @@ public final class ViewRunner {
         frame = new JFrame("Dungeon Adventure Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1920, 1080);
+        
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - frame.getWidth()) / 2;
@@ -105,10 +110,29 @@ public final class ViewRunner {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
         mainPanel.setOpaque(true);
+       
 
         // Title screen setup
         titleScreen = new TitleScreenPanel(new TitleScreenController(frame, cardLayout, mainPanel));
         mainPanel.add(titleScreen, "TitleScreen");
+
+        frame.getRootPane().addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_F2) {
+                    String finalPath = System.getProperty("user.dir") + "\\SaveFile.ser";
+                    Main.SerializedtheWorld(finalPath);
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+ }
+        });
 
         myToGamePanelQueue = new LinkedBlockingQueue<>() {
             @Override
@@ -343,6 +367,7 @@ public final class ViewRunner {
             //CombatManager.battle(frame, hero, monster);  
         }
     }
+    
     
 
     //// Main method

@@ -1,6 +1,6 @@
 package dungeon;
 
-public interface Healing {
+public interface Healing  {
     
     // Abstract method to heal
     void healConstructor();

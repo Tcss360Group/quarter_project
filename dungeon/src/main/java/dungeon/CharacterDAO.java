@@ -1,4 +1,5 @@
 package dungeon;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
@@ -7,7 +8,9 @@ import java.sql.Statement;
 
 
 
-public class CharacterDAO {
+public class CharacterDAO implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static void insertCharacter(String name, double health, double damage, double range, int attackSpeed, double hitChance, double healChance, int minHeal, int maxHeal, int minDamage, int maxDamage) {
         String sql = "INSERT INTO Characters(name, health, damage, range, attack_speed, hit_chance, heal_chance, min_heal, max_heal, min_damage, max_damage) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.connect();

@@ -3,8 +3,11 @@ package dungeon.View;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
-public class ImageDisplayApp {
+public class ImageDisplayApp implements Serializable {
+    private static final long serialVersionUID = 1L;
+
 
     private static ImagePanel imagePanel;
     private static String myString;

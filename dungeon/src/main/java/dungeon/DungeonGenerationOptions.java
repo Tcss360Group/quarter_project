@@ -1,6 +1,10 @@
 package dungeon;
 
-public class DungeonGenerationOptions {
+import java.io.Serializable;
+
+public class DungeonGenerationOptions implements Serializable   {
+
+    private static final long serialVersionUID = 1L;
 
     public static final int DEFAULT_WIDTH = 30;
     public static final int DEFAULT_HEIGHT = 30;

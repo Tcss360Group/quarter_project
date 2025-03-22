@@ -16,7 +16,32 @@ public class Gremlin extends Monster {
     private int maxDamage;
 
     public Gremlin(final Atom theLoc) {
-        super(theLoc, GREMLIN_NAME, GREMLIN_HEALTH, GREMLIN_DAMAGE, GREMLIN_RANGE, ATTACK_SPEED, HIT_CHANCE, CHANCE_TO_HEAL, MIN_HEAL, MAX_HEAL);
+        super(theLoc, "Gremlin", 0, 0, 0, 0, 0, 0, 0, 0); // Temporary placeholder values
+        fetchStatsFromDatabase(); // Pull stats from database
+    }
+
+    private void fetchStatsFromDatabase() {
+        String sql = "SELECT * FROM Characters WHERE name = 'Gremlin'";
+        try (Connection conn = DatabaseConnection.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                setName(rs.getString("name"));
+                setHealth(rs.getDouble("health"));
+                setDamage(rs.getDouble("damage"));
+                this.range = rs.getDouble("range");
+                this.attackSpeed = rs.getInt("attack_speed");
+                this.hitChance = rs.getDouble("hit_chance");
+                this.healChance = rs.getDouble("heal_chance");
+                this.minHeal = rs.getInt("min_heal");
+                this.maxHeal = rs.getInt("max_heal");
+                this.minDamage = rs.getInt("min_damage");
+                this.maxDamage = rs.getInt("max_damage");
+            }
+        } catch (Exception e) {
+            System.out.println("Error fetching Gremlin stats from database: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override

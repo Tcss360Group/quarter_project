@@ -1,9 +1,11 @@
 package dungeon;
 
+
 /**
  * Represents a general object that can move within the dungeon.
  */
-public abstract class DungeonObject extends Movable {
+public abstract class DungeonObject extends Movable   {
+
 
     private String myType;
 

@@ -8,7 +8,7 @@ import javax.swing.SwingUtilities;
 import dungeon.Controller.GameController;
 import dungeon.View.CombatManager;
 
-public abstract class DungeonCharacter extends Movable {
+public abstract class DungeonCharacter extends Movable{
 
     private static final double VISION_POWER = VisionPower.NONE.power();
 

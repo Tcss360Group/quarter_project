@@ -3,12 +3,15 @@ package dungeon;
 import java.awt.Graphics2D;
 import java.awt.List;
 import java.awt.geom.AffineTransform;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import dungeon.Controller.GameController;
 
-public abstract class Atom {
+public abstract class Atom  implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
 
     private static final String DEFAULT_NAME = "thing";
 

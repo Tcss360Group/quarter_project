@@ -1,8 +1,11 @@
 package dungeon;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class MonsterFactory {
+public class MonsterFactory implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     private static final Random RANDOM = new Random();
 
     public static Monster createMonster(final String type, final Atom theLoc) {

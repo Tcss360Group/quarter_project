@@ -23,7 +23,9 @@ import java.awt.image.BufferStrategy;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 
-public class GamePanel extends Canvas implements Runnable {
+public class GamePanel extends Canvas implements Runnable  {
+    private static final long serialVersionUID = 1L;
+
     public static final long FRAMERATE_TARGET_MILLISECONDS = 16;
     private volatile boolean running = true; 
     private volatile boolean myMouseIsOver = false;

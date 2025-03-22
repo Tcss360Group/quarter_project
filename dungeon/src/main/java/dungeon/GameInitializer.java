@@ -1,5 +1,10 @@
 package dungeon;
-public class GameInitializer {
+
+import java.io.Serializable;
+
+public class GameInitializer implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     public static void initializeGame() {
         // Create the table if it doesn't exist
         DatabaseSetup.createTable();

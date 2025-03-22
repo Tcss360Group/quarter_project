@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * A health potion that restores health when used.
  */
-public class HealthPotion extends Item {
+public class HealthPotion extends Item  {
 
     private static final String NAME = "Health Potion";
     private static final int HEAL_AMOUNT = 50;

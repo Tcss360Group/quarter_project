@@ -1,10 +1,13 @@
 package dungeon;
 
+import java.io.Serializable;
+
 /**
  * A class that represents a generic game event.
  */
-public abstract class GameEvent {
-    
+public abstract class GameEvent implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String description;
 
     public GameEvent(String description) {

@@ -6,6 +6,7 @@ import java.util.Optional;
  * Placed in rooms to let things move to and fro other rooms.
  */
 public class Door extends Movable {
+
     
     private static final String DEFAULT_NAME = "door";
     // Default sprite for the door

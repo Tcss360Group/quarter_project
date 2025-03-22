@@ -8,6 +8,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.Optional;
 
 import dungeon.Atom;
@@ -19,7 +20,9 @@ import dungeon.Controller.SystemController.InOut;
  * images are in image space, we need an image + an affine transform + bounds
  * to describe an atom irt when how and where it is drawn
  */
-public class AtomView implements Shape {
+public class AtomView implements Shape, Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static final int DEFAULT_WIDTH = 32;
     public static final int DEFAULT_HEIGHT = 32;
     private int myID;
