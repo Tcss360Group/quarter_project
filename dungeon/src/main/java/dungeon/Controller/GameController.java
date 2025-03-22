@@ -47,6 +47,9 @@ public final class GameController {
     private Room[][][] myMap;
     private int[] myDims;
 
+    /// if true, we dont create any view whatsoever and just start the game with no input
+    private boolean myIsHeadless;
+
     private ViewRunner myView;
     ///messages given to us by the ViewRunner that we havent resolved yet
     public BlockingQueue<ViewToModelMessage> myVTMQueue;
@@ -67,7 +70,8 @@ public final class GameController {
     private HashMap<String, SystemController> mySystemControllersByName;
     private HashMap<GameState, ArrayList<SystemController>> mySystemControllersByState;
 
-    public GameController(final DungeonGenerationOptions theOptions) {
+    public GameController(final DungeonGenerationOptions theOptions, final boolean theIsHeadless) {
+        myIsHeadless = theIsHeadless;
         myMobs = new ArrayList<>();
         myPlayer = null;
         myPillars = new ArrayList<>();
@@ -172,22 +176,13 @@ public final class GameController {
 
     public void init() {
 
-
-        setState(GameState.INITIALIZING);
-        updateForState(GameState.INITIALIZING, GameState.INITIALIZING);
-        //int size = (int)Math.sqrt(theNumRooms);
-        //DungeonGenerationOptions options = new DungeonGenerationOptions(
-        //        theNumRooms,
-        //        theNumFloors,
-        //        4,
-        //        10,
-        //        new String[] { "a", "b", "c", "d" },
-        //        size,
-        //        size);
-        //DungeonGenerator generator = new DungeonGenerator(this);
-        //myMap = generator.createMap(myOptions);
-
-
+        if(myIsHeadless) {
+            setState(GameState.LOADING);
+            updateForState(GameState.INITIALIZING, GameState.LOADING);
+        } else {
+            setState(GameState.INITIALIZING);
+            updateForState(GameState.INITIALIZING, GameState.INITIALIZING);
+        }
     }
 
     public void start() throws Exception {
@@ -196,11 +191,9 @@ public final class GameController {
             try {
                 loop();
             } catch (Exception e) {
-                System.out.println("UNCAUGHT EXCEPTION FROM LOOP: " + e.toString());
-                throw e; //just so i catch it, might be temporary
-                //continue;
+                System.out.println("UNCAUGHT EXCEPTION FROM LOOP: " + e.getStackTrace());
+                continue;
             }
-            break;
         }
     }
 
@@ -314,6 +307,14 @@ public final class GameController {
 
     public void pushMessage(final String theMessage) {
         myMTVQueue.add(new AddMessage(theMessage));
+    }
+
+    public boolean getIsHeadless() {
+        return myIsHeadless;
+    }
+
+    public ArrayList<Pillar> getPillars() {
+        return (ArrayList<Pillar>)myPillars.clone();
     }
 
 }

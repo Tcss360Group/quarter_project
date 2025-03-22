@@ -171,14 +171,7 @@ public class GamePanel extends Canvas implements Runnable  {
 
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, getWidth(), getHeight());
-            // Render all AtomViews
-            //g.setColor(Color.RED);
-            //ArrayList<AtomView> clonedView = (ArrayList<AtomView>)currentViews.clone();
             for (AtomView view : currentViews) {
-                //g.drawImage(view.getSprite().getImage(), view.getTransform(), null);
-                //g.setColor(Color.RED);
-                //Point2D point = view.getScreenSpaceTransform().transform(new Point2D.Double(0,0), null);
-                //g.fillRect((int)point.getX(), (int)point.getY(), 100, 100);
                 view.render(g);
             }
 
